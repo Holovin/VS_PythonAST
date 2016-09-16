@@ -403,7 +403,7 @@ class StateIdentityInput(StateAbstract):
 class StateStringInput(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_QUOTE:
-            return StateStringEnd()
+            return StateString()
 
         if char == LibState.CHAR_ESCAPE:
             return StateStringEscapePrepare()
@@ -421,7 +421,7 @@ class StateStringEscapeIgnore(StateAbstract):
         return StateStringInput()
 
 
-class StateStringEnd(StateAbstract):
+class StateString(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
