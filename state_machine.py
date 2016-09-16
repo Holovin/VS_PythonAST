@@ -43,8 +43,8 @@ class StateMachine:
             self.check()
 
         else:
-            if type(self.current_type) is not _StateReturn:
+            if type(self.current_type) is not _StateReturn and len(self.current_text[:-1]) > 1:
                 print('Parse error! Position: [' + str(self.start_index) + '...' + str(self.index - 1) +
-                      '], text value: [' + self.current_text[:-1] + '], this data was skipped')
+                      '], text value: [' + self.current_text[:-1] + '], this data was skipped' + self.current_type)
 
         return
