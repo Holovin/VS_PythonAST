@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from state_machine import StateMachine
+from lex.state_machine import StateMachine
 
 
 def main():

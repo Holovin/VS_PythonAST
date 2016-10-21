@@ -1,5 +1,4 @@
-from state_lib import LibState
-from state_common import StateStart, StateError, StateEnd, StateStringEscapePrepare, StateStringInput, \
+from lex.state_common import StateStart, StateError, StateEnd, StateStringEscapePrepare, StateStringInput, \
     StateStringEscapeIgnore
 
 
@@ -66,5 +65,9 @@ class StateMachine:
             self.current_state = self.current_state.get_next_state(self.input_text[self.index])
             self.check()
 
+        # else:
+        #    if type(self.current_type) is not StateEnd and len(self.current_text[:-1]) > 1:
+        #        print('Parse error! Position: [' + str(self.start_index) + '...' + str(self.index) +
+        #              '], text value: [' + self.current_text + '], this data was skipped (' + self.current_type + ')')
 
         return

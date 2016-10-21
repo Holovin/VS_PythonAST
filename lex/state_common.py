@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 
-from state_lib import LibState
+from lex.state_lib import LibState
 
 
 class StateAbstract(ABC):
