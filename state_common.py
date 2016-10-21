@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 
-from state_chars import LibState
+from state_lib import LibState
 
 
 class StateAbstract(ABC):
@@ -104,9 +104,6 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_BRACE_FIG_CLOSE:
             return StateBraceFigClose()
 
-        if char == LibState.CHAR_ENDSYMBOL:
-            return _StateReturn()
-
         return StateError()
 
 
@@ -120,11 +117,6 @@ def end_keyword_or_id_check(char):
         return StateEnd()
 
     return StateIdentityInput()
-
-
-class _StateReturn(StateAbstract):
-    def get_next_state(self, char):
-        return _StateReturn()
 
 
 class StateBraceFigClose(StateAbstract):
@@ -200,7 +192,7 @@ class StateEqual2(StateAbstract):
 
 class StateDot(StateAbstract):
     def get_next_state(self, char):
-        if char == LibState.CHAR_DOT:
+        if char == LibState.CHAR_VLINE:
             return StateDotLine()
 
         return StateEnd()
