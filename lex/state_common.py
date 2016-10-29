@@ -12,11 +12,17 @@ class StateAbstract(ABC):
     def get_next_state(self, char):
         pass
 
+    @abstractmethod
+    def get_str_name(self):
+        pass
+
 
 class StateError(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_ERROR
 
 class StateStart(StateAbstract):
     def get_next_state(self, char):
@@ -53,7 +59,7 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_QUOTE:
             return StateStringInput()
 
-        if char == LibState.CHAR_VLINE:
+        if char == LibState.CHAR_V_LINE:
             return StateVLine()
 
         if char == LibState.CHAR_SLASH:
@@ -83,13 +89,15 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_MUL:
             return StateMul()
 
-        if char == LibState.CHAR_PERC:
-            return StatePerc()
+        if char == LibState.CHAR_PERCENT:
+            return StatePercent()
 
         if char == LibState.CHAR_EXCL:
             return StateExcl()
 
         if char == LibState.CHAR_ESCAPE:
+            # TODO: escape must be only from string classes?
+            print("possible error?")
             return StateEscape()
 
         if char == LibState.CHAR_BRACE_CIRCLE_OPEN:
@@ -106,164 +114,238 @@ class StateStart(StateAbstract):
 
         return StateError()
 
+    def get_str_name(self):
+        return LibState.STATE_START
+
 
 class StateEnd(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
-
-def end_keyword_or_id_check(char):
-    if char in LibState.CHAR_WORD_BREAKERS:
-        return StateEnd()
-
-    return StateIdentityInput()
-
-
-class StateBraceFigClose(StateAbstract):
-    def get_next_state(self, char):
-        return StateEnd()
+    def get_str_name(self):
+        return LibState.STATE_END
 
 
 class StateBraceFigOpen(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_BRACE_FIG_OPEN
 
-class StateBraceCircleClose(StateAbstract):
+
+class StateBraceFigClose(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_BRACE_FIG_CLOSE
 
 
 class StateBraceCircleOpen(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_BRACE_CIRCLE_OPEN
+
+
+class StateBraceCircleClose(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_BRACE_CIRCLE_CLOSE
+
 
 class StateEscape(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_ESCAPE
 
 
 class StateExcl(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_EXCL
 
-class StatePerc(StateAbstract):
+
+class StatePercent(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_PERCENT
 
 
 class StateMul(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_MUL
+
 
 class StatePlus(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_PLUS
+
 
 class StateMinus(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_MORE:
-            return StateMinusMore()
+            return StateArrow()
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_MINUS
 
-class StateMinusMore(StateAbstract):
+
+class StateArrow(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_ARROW
 
 
 class StateEqual(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_EQUAL:
-            return StateEqual2()
+            return StateEqualTwice()
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_EQUAL
 
-class StateEqual2(StateAbstract):
+
+class StateEqualTwice(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_EQUAL_TWICE
 
 
 class StateDot(StateAbstract):
     def get_next_state(self, char):
-        if char == LibState.CHAR_VLINE:
+        if char == LibState.CHAR_V_LINE:
             return StateDotLine()
 
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_DOT
 
 
 class StateLess(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_EQUAL:
-            return StateLessEq()
+            return StateLessEqual()
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_LESS
 
-class StateLessEq(StateAbstract):
+
+class StateLessEqual(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_LESS_EQUAL
 
 
 class StateMore(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_EQUAL:
-            return StateMoreEq()
+            return StateMoreEqual()
+
+    def get_str_name(self):
+        return LibState.STATE_MORE
 
 
-class StateMoreEq(StateAbstract):
+class StateMoreEqual(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_MORE_EQUAL
 
 
 class StateDotLine(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_DOT_LINE
+
 
 class StateAmp(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_AMP:
-            return StateAmp2()
+            return StateAmpTwice()
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_AMP
 
-class StateAmp2(StateAbstract):
+
+class StateAmpTwice(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_AMP_TWICE
 
 
 class StateSlash(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_EQUAL:
-            return StateSlashEq()
+            return StateSlashEqual()
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_SLASH
 
-class StateSlashEq(StateAbstract):
+
+class StateSlashEqual(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_SLASH_EQUAL
 
 
 class StateVLine(StateAbstract):
     def get_next_state(self, char):
-        if char == LibState.CHAR_VLINE:
+        if char == LibState.CHAR_V_LINE:
            return StateVLine2()
 
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_V_LINE
 
 
 class StateVLine2(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_V_LINE_TWICE
 
 
 class StateLetterV(StateAbstract):
@@ -273,6 +355,9 @@ class StateLetterV(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_V
+
 
 class StateLetterVa(StateAbstract):
     def get_next_state(self, char):
@@ -281,10 +366,16 @@ class StateLetterVa(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_VA
+
 
 class StateVar(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_VAR
 
 
 class StateLetterT(StateAbstract):
@@ -294,6 +385,9 @@ class StateLetterT(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_T
+
 
 class StateLetterTy(StateAbstract):
     def get_next_state(self, char):
@@ -301,6 +395,9 @@ class StateLetterTy(StateAbstract):
             return StateLetterTyp()
 
         return StateIdentityInput()
+
+    def get_str_name(self):
+        return LibState.STATE_TY
 
 
 class StateLetterTyp(StateAbstract):
@@ -310,10 +407,16 @@ class StateLetterTyp(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_TYP
+
 
 class StateType(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_TYPE
 
 
 class StateLetterO(StateAbstract):
@@ -326,15 +429,24 @@ class StateLetterO(StateAbstract):
 
         return StateIdentityInput
 
+    def get_str_name(self):
+        return LibState.STATE_O
+
 
 class StateOd(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
 
+    def get_str_name(self):
+        return LibState.STATE_OD
+
 
 class StateOf(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_OF
 
 
 class StateLetterD(StateAbstract):
@@ -344,10 +456,16 @@ class StateLetterD(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_D
+
 
 class StateDo(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_DO
 
 
 class StateLetterF(StateAbstract):
@@ -357,10 +475,16 @@ class StateLetterF(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_F
+
 
 class StateFi(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_FI
 
 
 class StateLetterI(StateAbstract):
@@ -373,15 +497,24 @@ class StateLetterI(StateAbstract):
 
         return StateIdentityInput()
 
+    def get_str_name(self):
+        return LibState.STATE_I
+
 
 class StateIf(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
 
+    def get_str_name(self):
+        return LibState.STATE_IF
+
 
 class StateIn(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_IN
 
 
 class StateIdentityInput(StateAbstract):
@@ -391,41 +524,62 @@ class StateIdentityInput(StateAbstract):
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_IDENTITY
+
 
 class StateStringInput(StateAbstract):
     def get_next_state(self, char):
         if char == LibState.CHAR_QUOTE:
-            return StateString()
+            return StateStringLast()
 
         if char == LibState.CHAR_ESCAPE:
             return StateStringEscapePrepare()
 
         return StateStringInput()
 
+    def get_str_name(self):
+        return LibState.STATE_STR_INPUT
+
 
 class StateStringEscapePrepare(StateAbstract):
     def get_next_state(self, char):
         return StateStringEscapeIgnore()
+
+    def get_str_name(self):
+        return LibState.STATE_STR_ESC_CHAR
 
 
 class StateStringEscapeIgnore(StateAbstract):
     def get_next_state(self, char):
         return StateStringInput()
 
+    def get_str_name(self):
+        return LibState.STATE_STR_ESC
 
-class StateString(StateAbstract):
+
+class StateStringLast(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_STR_LAST
 
 
 class StateSemicolon(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_SEMICOLON
+
 
 class StateSpace(StateAbstract):
     def get_next_state(self, char):
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_SPACE
 
 
 class StateInteger(StateAbstract):
@@ -438,6 +592,9 @@ class StateInteger(StateAbstract):
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_INT
+
 
 class StateFloatStart(StateAbstract):
     def get_next_state(self, char):
@@ -446,6 +603,9 @@ class StateFloatStart(StateAbstract):
 
         return StateEnd()
 
+    def get_str_name(self):
+        return LibState.STATE_FLOAT_START
+
 
 class StateFloat(StateAbstract):
     def get_next_state(self, char):
@@ -453,3 +613,13 @@ class StateFloat(StateAbstract):
             return StateFloat()
 
         return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_FLOAT
+
+
+def end_keyword_or_id_check(char):
+    if char in LibState.CHAR_WORD_BREAKERS:
+        return StateEnd()
+
+    return StateIdentityInput()
