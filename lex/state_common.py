@@ -16,6 +16,9 @@ class StateAbstract(ABC):
     def get_str_name(self):
         pass
 
+    def get_str_type(self):
+        return LibState.TYPE_OK
+
 
 class StateError(StateAbstract):
     def get_next_state(self, char):
@@ -23,6 +26,10 @@ class StateError(StateAbstract):
 
     def get_str_name(self):
         return LibState.STATE_ERROR
+
+    def get_str_type(self):
+        return LibState.TYPE_ERROR
+
 
 class StateStart(StateAbstract):
     def get_next_state(self, char):
@@ -95,10 +102,10 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_EXCL:
             return StateExcl()
 
-        if char == LibState.CHAR_ESCAPE:
-            # TODO: escape must be only from string classes?
-            print("possible error?")
-            return StateEscape()
+        # if char == LibState.CHAR_ESCAPE:
+        #     # TODO: escape must be only from string classes?
+        #     print("possible error?")
+        #     return StateEscape()
 
         if char == LibState.CHAR_BRACE_CIRCLE_OPEN:
             return StateBraceCircleOpen()
@@ -112,10 +119,44 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_BRACE_FIG_CLOSE:
             return StateBraceFigClose()
 
+        if char == LibState.CHAR_NEW_LINE:
+            return StateNewLine()
+
+        if char == LibState.CHAR_CARET:
+            return StateCaret()
+
         return StateError()
 
     def get_str_name(self):
         return LibState.STATE_START
+
+
+class StateCaret(StateAbstract):
+    def get_next_state(self, char):
+        if char == LibState.CHAR_NEW_LINE:
+            return StateNewLine()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CARET
+
+    def get_str_type(self):
+        return LibState.TYPE_SKIP
+
+
+class StateNewLine(StateAbstract):
+    def get_next_state(self, char):
+        if char == LibState.CHAR_CARET:
+            return StateCaret()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_NEW_LINE
+
+    def get_str_type(self):
+        return LibState.TYPE_SKIP
 
 
 class StateEnd(StateAbstract):
@@ -536,6 +577,9 @@ class StateStringInput(StateAbstract):
         if char == LibState.CHAR_ESCAPE:
             return StateStringEscapePrepare()
 
+        if char == LibState.CHAR_NEW_LINE:
+            return StateError()
+
         return StateStringInput()
 
     def get_str_name(self):
@@ -580,6 +624,9 @@ class StateSpace(StateAbstract):
 
     def get_str_name(self):
         return LibState.STATE_SPACE
+
+    def get_str_type(self):
+        return LibState.TYPE_SKIP
 
 
 class StateInteger(StateAbstract):

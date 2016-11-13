@@ -1,10 +1,17 @@
 #!/usr/bin/python
+import codecs
+
+
 from lex.state_machine import StateMachine
 
 
 def main():
-    input_text = input('Input text to parse: ')
-    StateMachine(input_text).take()
+    f = codecs.open('./data/input.txt', 'r', 'utf-8')
+
+    sm = StateMachine()
+    sm.set_data(f.read())
+    sm.parse_data()
+    sm.show()
 
     return
 

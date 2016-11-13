@@ -1,73 +1,102 @@
-from lex.state_common import StateStart, StateError, StateEnd, StateStringEscapePrepare, StateStringInput, \
-    StateStringEscapeIgnore
+import re
+
+from lex.state_common import StateStart, StateError, StateEnd, StateStringEscapePrepare, StateStringInput, StateStringEscapeIgnore
+from lex.state_data import StateData
+from lex.state_lib import LibState
 
 
 class StateMachine:
+    # common
     current_state = StateStart()
-    current_text = ''
-    current_type = 'None'
-    start_index = 0
     index = 0
-    end_index = 0
+    index_last = 0
     input_text = ''
 
-    def __init__(self, input_text):
-        self.input_text = input_text
+    # current lex
+    lex_start_position = 0
+    lex_length = 0
+    lex_text = ''
+    lex = None
 
-    def reset(self, new_index=0):
-        self.start_index = new_index
-        self.current_text = ''
+    # for output
+    output = []
+
+    def set_data(self, input_text):
+        self.reset_data()
+        self.input_text = input_text
+        self.index_last = len(self.input_text)
+
+    def reset_data(self):
+        self.current_state = StateStart()
+        self.index = 0
+        self.index_last = 0
+        self.input_text = ''
+        self.__clear_lex()
+
+    def __skip_data(self):
+        # fill last char if empty
+        if self.lex_length == 0:
+            self.lex_length = 1
+            self.lex_text = self.input_text[self.index]
+
+        data = StateData(self.current_state.get_str_name(), LibState.TYPE_ERROR, self.lex_text, self.lex_start_position, self.lex_length)
+        self.output.append(data)
+
+        self.index += 1
+        self.__clear_lex()
+
+    def __clear_lex(self):
+        self.lex_length = 0
+        self.lex_start_position = self.index
+        self.lex_text = ''
+        self.lex = None
         self.current_state = StateStart()
 
+    def __end_lex(self):
+        data = StateData(self.lex.get_str_name(), self.lex.get_str_type(), self.lex_text, self.lex_start_position, self.lex_length)
+        self.output.append(data)
+        self.__clear_lex()
+
+    def __do_lex(self):
+        self.lex = self.current_state
+        self.lex_text += self.input_text[self.index]
+        self.lex_length += 1
+        self.index += 1
+
     def check(self):
-        if type(self.current_state) is StateError:
-            print('Parse error! Position: [' + str(self.start_index) + '...' + str(self.index) +
-                  '], text value: [' + self.current_text + '], this data was skipped')
-            self.index += 1
-            self.reset(self.index)
+        # something wrong
+        if self.current_state.get_str_name() == LibState.STATE_ERROR:
+            self.__skip_data()
+            return
 
-        elif type(self.current_state) is StateEnd:
-            # don't do +1 because use this symbol again
-            print('Detected! Position: [' + str(self.start_index) + '...' + str(self.index - 1) +
-                  '], text value: [' + self.current_text + '], type: ' + self.current_type)
+        # lex end
+        if self.current_state.get_str_name() == LibState.STATE_END:
+            self.__end_lex()
+            return
 
-            self.start_index = self.index
-            self.current_text = ''
-            self.current_state = StateStart()
+        self.__do_lex()
 
-        elif self.index == self.end_index - 1:
-            # ending
-            self.current_text += self.input_text[self.index]
-            self.index += 1
+        # check if last lex
+        if self.index == self.index_last:
 
             # check if last token is valid and ended
-            if type(self.current_state) not in [StateStringEscapePrepare, StateStringEscapeIgnore, StateStringInput]:
-                print('Last detected! Position: [' + str(self.start_index) + '...' + str(self.index) +
-                      '], text value: [' + self.current_text + '], type: ' + self.current_type)
+            if self.current_state.get_str_name() not in LibState.STATES_WRONG_END:
+                self.__end_lex()
 
-                self.current_state = StateEnd()
             else:
-                print('Parse error! Position: [' + str(self.start_index) + '...' + str(self.index) +
-                      '], text value: [' + self.current_text + '], this data was skipped')
-                self.current_state = StateError()
+                self.__skip_data()
 
-        else:
-            self.current_type = str(type(self.current_state))
-            self.current_text += self.input_text[self.index]
-            self.index += 1
-
-        return
-
-    def take(self):
-        self.end_index = len(self.input_text)
-
+    def parse_data(self):
         while self.index < len(self.input_text):
             self.current_state = self.current_state.get_next_state(self.input_text[self.index])
             self.check()
 
-        # else:
-        #    if type(self.current_type) is not StateEnd and len(self.current_text[:-1]) > 1:
-        #        print('Parse error! Position: [' + str(self.start_index) + '...' + str(self.index) +
-        #              '], text value: [' + self.current_text + '], this data was skipped (' + self.current_type + ')')
-
         return
+
+    def show(self):
+        print('--- Report --- ')
+        p = re.compile('(\\n|\\r)')
+
+        for lex in self.output:
+            if lex.state_type == LibState.TYPE_OK:
+                print('Pos: ' + str(lex.start_position) + ', len: ' + str(lex.length) + ', text: [' + p.sub('', lex.text) + '], type: ' + lex.state_class + ' | '  + lex.state_type)
