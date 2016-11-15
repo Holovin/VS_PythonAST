@@ -1,3 +1,4 @@
+import logging
 import re
 
 from lex.state_common import StateStart, StateError, StateEnd, StateStringEscapePrepare, StateStringInput, StateStringEscapeIgnore
@@ -31,6 +32,7 @@ class StateMachine:
         self.index = 0
         self.index_last = 0
         self.input_text = ''
+        self.output = []
         self.__clear_lex()
 
     def __skip_data(self):
@@ -41,6 +43,7 @@ class StateMachine:
 
         data = StateData(self.current_state.get_str_name(), LibState.TYPE_ERROR, self.lex_text, self.lex_start_position, self.lex_length)
         self.output.append(data)
+        logging.warning('Skip bad token: %s at %d position (len: %d, type: %s)', self.lex_text, self.lex_start_position, self.lex_length, LibState.TYPE_ERROR)
 
         self.index += 1
         self.__clear_lex()
@@ -55,6 +58,7 @@ class StateMachine:
     def __end_lex(self):
         data = StateData(self.lex.get_str_name(), self.lex.get_str_type(), self.lex_text, self.lex_start_position, self.lex_length)
         self.output.append(data)
+        logging.info('Parse "%s" token: %s at %d position (len: %d, type: %s)', self.lex.get_str_name(), self.lex_text, self.lex_start_position, self.lex_length, self.lex.get_str_type())
         self.__clear_lex()
 
     def __do_lex(self):
@@ -93,10 +97,15 @@ class StateMachine:
 
         return
 
+    def get_tokens(self, state=None):
+        if state is None:
+            return self.output
+
+        return [x for x in self.output if x.state_type in state]
+
     def show(self):
         print('--- Report --- ')
         p = re.compile('(\\n|\\r)')
 
-        for lex in self.output:
-            if lex.state_type == LibState.TYPE_OK:
-                print('Pos: ' + str(lex.start_position) + ', len: ' + str(lex.length) + ', text: [' + p.sub('', lex.text) + '], type: ' + lex.state_class + ' | '  + lex.state_type)
+        for lex in self.get_tokens():
+            print('Pos: ' + str(lex.start_position) + ', len: ' + str(lex.length) + ', text: [' + p.sub('', lex.text) + '], type: ' + lex.state_class + ' | ' + lex.state_type)
