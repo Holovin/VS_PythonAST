@@ -14,3 +14,4 @@ class LibParse:
     MOD = 'MOD'
     SUB = 'SUB'
     IF = 'IF'
+    FOR = 'FOR'

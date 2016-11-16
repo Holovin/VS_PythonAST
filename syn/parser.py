@@ -55,12 +55,16 @@ class Parser:
     # statement: TODO: compound-st (check {)
     #            expression-st (all others!)
     #            selection-st (check IF)
-    #            TODO: iteration-st (check FOR)
+    #            iteration-st (check FOR)
     def z_statement(self):
 
         # selection-st
         if self.get_token_type() is LibState.STATE_IF:
             node = self.z_selection_st()
+
+        # iteration-st
+        elif self.get_token_type() is LibState.STATE_FOR:
+            node = self.z_iteration_st()
 
         else:
             # expression-st
@@ -69,8 +73,55 @@ class Parser:
 
         return node
 
+    # iteration_st
+    def z_iteration_st(self):
+
+        # for
+        for_st = self.get_token_current_and_skip()
+
+        # check `(`
+        if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_OPEN:
+            self.error('Waiting `(` for start FOR statement')
+
+        # skip `(`
+        self.get_token_next()
+
+        for_init = None
+        for_condition = None
+        for_after = None
+
+        # for: try parse for_init part
+        if self.get_token_type() is not LibState.STATE_SEMICOLON:
+            for_init = self.z_expression()
+
+        # skip `;`
+        self.get_token_next()
+
+        # for: try parse for_condition part
+        if self.get_token_type() is not LibState.STATE_SEMICOLON:
+            for_condition = self.z_expression()
+
+        # skip `;`
+        self.get_token_next()
+
+        # for: try parse for_after part
+        if self.get_token_type() is not LibState.STATE_SEMICOLON:
+            for_after = self.z_expression()
+
+        # check `)`
+        if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
+            self.error('Waiting `)` for end FOR statement')
+
+        # skip `)`
+        self.get_token_next()
+
+        for_body = self.z_statement()
+
+        return Node(LibParse.FOR, for_st, op1=for_init, op2=for_condition, op3=for_after, op4=for_body)
+
     # selection-st
     def z_selection_st(self):
+
         # if
         if_st = self.get_token_current_and_skip()
 
@@ -215,3 +266,7 @@ class Parser:
 
         if node.op3 is not None:
             self.show_node(node.op3, level + 1)
+
+        if node.op4 is not None:
+            self.show_node(node.op4, level + 1)
+
