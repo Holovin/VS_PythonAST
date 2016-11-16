@@ -48,7 +48,7 @@ class Parser:
         node = Node(LibParse.STATEMENT, None, op1=self.z_statement())
 
         if self.get_token_type() is not LibState.STATE_EOF:
-            logging.error('Invalid statement!')
+            logging.error('Invalid statement! END')
 
         return node
 
@@ -65,7 +65,7 @@ class Parser:
         else:
             # expression-st
             node = Node(LibParse.STATEMENT, None, op1=self.z_expression_st())
-            self.get_token_next()
+            # self.get_token_next()
 
         return node
 
@@ -83,10 +83,15 @@ class Parser:
         # else?
         else_st = None
 
-        # if self.get_token_type() is LibState.STATE_ELSE:
-        # This token still didnt implemented in state_machine.py
+        # check else
+        if self.get_token_type() is LibState.STATE_ELSE:
+            # skip else keyword
+            self.get_token_next()
 
-        return Node(LibParse.IF, if_st, op1=expression, op2=statement)
+            # parse else
+            else_st = self.z_statement()
+
+        return Node(LibParse.IF, if_st, op1=expression, op2=statement, op3=else_st)
 
     # expression-st: expression [opt];
     def z_expression_st(self):
@@ -95,6 +100,7 @@ class Parser:
         if self.get_token_type() is not LibState.STATE_SEMICOLON:
             self.error('Waiting ; symbol ')
 
+        # skip `;`
         self.get_token_next()
 
         return node
