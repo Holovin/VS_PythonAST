@@ -109,7 +109,7 @@ class Parser:
         node = self.z_term()
 
         # id = ...
-        if node.get_name() is LibParse.VARIABLE and self.get_token_type() is LibState.STATE_EQUAL:
+        if node is not None and node.get_name() is LibParse.VARIABLE and self.get_token_type() is LibState.STATE_EQUAL:
             node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
 
         # expression + term
@@ -159,12 +159,12 @@ class Parser:
             return node
 
         # number: integer
-        elif self.get_token_type() is LibState.STATE_INT:
+        elif self.get_token_type() is LibState.STATE_INTEGER_NUMBER:
             node = Node(LibParse.INTEGER, self.get_token_current())
             self.get_token_next()
             return node
 
-        elif self.get_token_type() is LibState.STATE_FLOAT:
+        elif self.get_token_type() is LibState.STATE_DOUBLE_NUMBER:
             node = Node(LibParse.FLOAT, self.get_token_current())
             self.get_token_next()
             return node
