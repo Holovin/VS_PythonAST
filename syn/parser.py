@@ -43,23 +43,28 @@ class Parser:
 
     def error(self, message):
         logging.error("Error at %d position: found: %s. %s", self.get_token_current().get_pos(), self.get_token_type(), message)
+        exit(1)
 
     def parse(self):
-        node = Node(LibParse.STATEMENT, None, op1=self.z_statement())
+        node = Node(LibParse.PROGRAM, None, op1=self.z_statement())
 
         if self.get_token_type() is not LibState.STATE_EOF:
             logging.error('Invalid statement! END')
 
         return node
 
-    # statement: TODO: compound-st (check {)
+    # statement: compound-st (check {)
     #            expression-st (all others!)
     #            selection-st (check IF)
     #            iteration-st (check FOR)
     def z_statement(self):
 
+        # compound-st
+        if self.get_token_type() is LibState.STATE_BRACE_FIG_OPEN:
+            node = self.z_compound_st()
+
         # selection-st
-        if self.get_token_type() is LibState.STATE_IF:
+        elif self.get_token_type() is LibState.STATE_IF:
             node = self.z_selection_st()
 
         # iteration-st
@@ -69,11 +74,96 @@ class Parser:
         else:
             # expression-st
             node = Node(LibParse.STATEMENT, None, op1=self.z_expression_st())
-            # self.get_token_next()
 
         return node
 
-    # iteration_st
+    # compound-st: {block-item-list [opt]}
+    def z_compound_st(self):
+        body = None
+
+        # check `{`
+        if self.get_token_type() is not LibState.STATE_BRACE_FIG_OPEN:
+            self.error('Waiting `{` for compound statement')
+
+        # skip `{`
+        compound_st = self.get_token_current_and_skip()
+
+        # try parse body (can be empty)
+        if self.get_token_type() is not LibState.STATE_BRACE_FIG_CLOSE:
+            body = self.z_block_item_list()
+
+        # check `}`
+        if self.get_token_type() is not LibState.STATE_BRACE_FIG_CLOSE:
+            self.error('Waiting `}` for compound statement')
+
+        # skip `}`
+        self.get_token_next()
+
+        return Node(LibParse.COMPOUND_ST, compound_st, op1=body)
+
+    # block-item-list: block-item
+    #                  block-item-list block-item [?]
+    def z_block_item_list(self):
+
+        # block-item
+        node = self.z_block_item()
+
+        # TODO: refactor
+        while self.get_token_type() is not LibState.STATE_BRACE_FIG_CLOSE and node is not None:
+            node = Node(LibParse.LIST, None, op1=node, op2=self.z_block_item())
+
+        return node
+
+    # block-item: declaration
+    #             statement
+    def z_block_item(self):
+
+        # declaration
+        if self.get_token_type() in [LibState.STATE_INT, LibState.STATE_DOUBLE]:
+            node = self.z_declaration()
+
+        # statement
+        else:
+            node = self.z_statement()
+
+        return node
+
+    # declaration: int IDENTITY
+    #              double IDENTITY
+    def z_declaration(self):
+        node = None
+
+        # int IDENTITY
+        if self.get_token_type() is LibState.STATE_INT:
+            # skip `int`
+            st = self.get_token_current_and_skip()
+
+            # check id
+            if self.get_token_type() is not LibState.STATE_IDENTITY:
+                self.error('Wrong identity name (1)')
+
+            # TODO: save context?
+            node = Node(LibParse.VAR_INT, self.get_token_current_and_skip()
+)
+        # double IDENTITY
+        elif self.get_token_type() is LibState.STATE_DOUBLE:
+            # skip `double`
+            st = self.get_token_current_and_skip()
+
+            # check id
+            if self.get_token_type() is not LibState.STATE_IDENTITY:
+                self.error('Wrong identity name (2)')
+
+            # take id
+            node = Node(LibParse.VAR_DOUBLE, self.get_token_current_and_skip())
+
+        # error
+        else:
+            self.error('Unknown variable declaration')
+
+        return node
+
+    # iteration_st: for (expression [opt]; expression [opt]; expression [opt]) statement
     def z_iteration_st(self):
 
         # for
@@ -223,7 +313,7 @@ class Parser:
             return node
 
         elif self.get_token_type() is LibState.STATE_DOUBLE_NUMBER:
-            node = Node(LibParse.FLOAT, self.get_token_current())
+            node = Node(LibParse.DOUBLE, self.get_token_current())
             self.get_token_next()
             return node
 
