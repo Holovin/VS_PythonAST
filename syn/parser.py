@@ -80,8 +80,12 @@ class Parser:
         return node
 
     # expression: id = expression
-    #             TODO: do much others
+    #             expression + term
+    #             expression - term
+    #             term
     def z_expression(self):
+
+        # term
         node = self.z_term()
 
         # id = ...
@@ -89,8 +93,12 @@ class Parser:
             node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
 
         # expression + term
-        if node is not None and self.get_token_type() is LibState.STATE_PLUS:
+        elif node is not None and self.get_token_type() is LibState.STATE_PLUS:
             node = Node(LibParse.ADD, self.get_token_current_and_skip(), op1=node, op2=self.z_term())
+
+        # expression - term
+        elif node is not None and self.get_token_type() is LibState.STATE_MINUS:
+            node = Node(LibParse.SUB, self.get_token_current_and_skip(), op1=node, op2=self.z_term())
 
         return node
 
@@ -99,24 +107,31 @@ class Parser:
     #       term % factor
     #       factor
     def z_term(self):
+
+        # factor
         node = self.z_factor()
 
         # term * factor
         if node is not None and self.get_token_type() is LibState.STATE_MUL:
             node = Node(LibParse.MUL, self.get_token_current_and_skip(), op1=node, op2=self.z_factor())
 
-        elif self.get_token_type() is LibState.STATE_SLASH:
-            pass
+        # term / factor
+        elif node is not None and self.get_token_type() is LibState.STATE_SLASH:
+            node = Node(LibParse.DIV, self.get_token_current_and_skip(), op1=node, op2=self.z_factor())
 
-        elif self.get_token_type() is LibState.STATE_PERCENT:
-            pass
+        # term % factor
+        elif node is not None and self.get_token_type() is LibState.STATE_PERCENT:
+            node = Node(LibParse.MOD, self.get_token_current_and_skip(), op1=node, op2=self.z_factor())
 
         return node
 
     # factor: (expression)
     #         id
     #         number
+    #
+    # NOTE:   Deadlock state
     def z_factor(self):
+
         # id
         if self.get_token_type() is LibState.STATE_IDENTITY:
             node = Node(LibParse.VARIABLE, self.get_token_current())
@@ -134,47 +149,23 @@ class Parser:
             self.get_token_next()
             return node
 
+        # (expression)
         elif self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
-            if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_OPEN:
-                self.error('Waiting ( symbol')
-
-            # skip (
-            self.get_token_next()
-
             # inner expression
-            node = Node('WTF', None)
+            node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=None, op2=self.z_expression())
 
             # check )
-            while self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
-                node = Node('IDK', None, op1=node, op2=self.z_expression())
-                #self.error('Waiting ) symbol')
+            if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
+                self.error('Waiting ) symbol')
 
             # skip )
             self.get_token_next()
 
             return node
 
-        return
-
-    # common wrapper for (expression) in ANY place
-    def y_brace_circle_inner_expression(self):
-        if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_OPEN:
-            self.error('Waiting ( symbol')
-
-        # skip (
-        self.get_token_next()
-
-        # inner expression
-        node = self.z_expression()
-
-        # check )
-        if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
-            self.error('Waiting ) symbol')
-
-        # skip )
-        self.get_token_next()
-
-        return node
+        # unknown
+        else:
+            self.error("Unknown state, possible wait ( symbol")
 
     def show_node(self, node, level):
         padding = '.' * level
