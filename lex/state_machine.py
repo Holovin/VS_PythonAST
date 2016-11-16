@@ -1,7 +1,7 @@
 import logging
 import re
 
-from lex.state_common import StateStart, StateError, StateEnd, StateStringEscapePrepare, StateStringInput, StateStringEscapeIgnore
+from lex.state_common import StateStart
 from lex.state_data import StateData
 from lex.state_lib import LibState
 
