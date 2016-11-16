@@ -54,12 +54,13 @@ class Parser:
 
     # statement: TODO: compound-st (check {)
     #            expression-st (all others!)
-    #            TODO: selection-st (check IF)
+    #            selection-st (check IF)
     #            TODO: iteration-st (check FOR)
     def z_statement(self):
-        if False:
-            # TODO
-            node = ''
+
+        # selection-st
+        if self.get_token_type() is LibState.STATE_IF:
+            node = self.z_selection_st()
 
         else:
             # expression-st
@@ -67,6 +68,25 @@ class Parser:
             self.get_token_next()
 
         return node
+
+    # selection-st
+    def z_selection_st(self):
+        # if
+        if_st = self.get_token_current_and_skip()
+
+        # (expression)
+        expression = self.y_brace_handler()
+
+        # statement
+        statement = self.z_statement()
+
+        # else?
+        else_st = None
+
+        # if self.get_token_type() is LibState.STATE_ELSE:
+        # This token still didnt implemented in state_machine.py
+
+        return Node(LibParse.IF, if_st, op1=expression, op2=statement)
 
     # expression-st: expression [opt];
     def z_expression_st(self):
@@ -150,7 +170,14 @@ class Parser:
             return node
 
         # (expression)
-        elif self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
+        return self.y_brace_handler()
+
+    # (expression)
+    # NOTE: helper function for prevent code duplicate
+    def y_brace_handler(self):
+
+        # check (
+        if self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
             # inner expression
             node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=None, op2=self.z_expression())
 

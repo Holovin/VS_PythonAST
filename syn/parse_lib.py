@@ -13,3 +13,4 @@ class LibParse:
     DIV = 'DIV'
     MOD = 'MOD'
     SUB = 'SUB'
+    IF = 'IF'
