@@ -179,7 +179,7 @@ class Parser:
         # check (
         if self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
             # inner expression
-            node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=None, op2=self.z_expression())
+            node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=self.z_expression())
 
             # check )
             if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
