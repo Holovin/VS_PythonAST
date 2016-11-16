@@ -1,18 +1,28 @@
 class Node:
-    # class name
-    state_type = ''
+    name = None
+
+    # class
+    state = None
 
     # value
-    data = ''
+    result = None
 
     # nodes
-    left_node = None
-    right_node = None
+    op1 = None
+    op2 = None
+    op3 = None
 
-    def __init__(self, state_type, data, left_node, right_node):
-        self.state_type = state_type    # LibState.STATE_*
-        self.data = data                # save data after evaluating expr
-        self.left_node = left_node      # another instance of [Node]
-        self.right_node = right_node    # another instance of [Node]
+    def __init__(self, name, state, result=None, op1=None, op2=None, op3=None):
+        self.name = name                # Parser.*
+        self.state = state              # instance of [StateData] class
+        self.result = result            # save result after evaluating expr
 
-        return
+        self.op1 = op1
+        self.op2 = op2
+        self.op3 = op3
+
+    def get_name(self):
+        return self.name
+
+    def get_state(self):
+        return self.state

@@ -33,6 +33,7 @@ class LibState:
     STATE_START = '[START]'
     STATE_ERROR = '[ERROR]'
     STATE_END = '[END]'
+    STATE_EOF = '[EOF]'
 
     # braces
     STATE_BRACE_FIG_OPEN = 'Brace: fig open'

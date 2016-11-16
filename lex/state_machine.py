@@ -95,6 +95,8 @@ class StateMachine:
             self.current_state = self.current_state.get_next_state(self.input_text[self.index])
             self.check()
 
+        self.output.append(StateData(LibState.STATE_EOF, LibState.TYPE_OK, '', len(self.input_text), 0))
+
         return
 
     def get_tokens(self, state=None):
