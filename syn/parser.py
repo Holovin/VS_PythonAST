@@ -237,13 +237,27 @@ class Parser:
 
     # expression-st: expression [opt];
     def z_expression_st(self):
-        node = Node(LibParse.EXPRESSION_ST, None, op1=self.z_expression())
+        node = Node(LibParse.EXPRESSION_ST, None, op1=self.z_expression_excl())
 
         if self.get_token_type() is not LibState.STATE_SEMICOLON:
             self.error('Waiting ; symbol ')
 
         # skip `;`
         self.get_token_next()
+
+        return node
+
+    # expression_excl: expression
+    #                  !expression
+    def z_expression_excl(self):
+
+        # !expression
+        if self.get_token_type() is LibState.STATE_EXCL:
+            node = Node(LibParse.EXPRESSION_EXCL, self.get_token_current_and_skip(), op1=self.z_expression())
+
+        # expression
+        else:
+            node = self.z_expression()
 
         return node
 
@@ -258,7 +272,7 @@ class Parser:
 
         # id = ...
         if node is not None and node.get_name() is LibParse.VARIABLE and self.get_token_type() is LibState.STATE_EQUAL:
-            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
+            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_excl())
 
         # expression + term
         elif node is not None and self.get_token_type() is LibState.STATE_PLUS:
@@ -327,7 +341,7 @@ class Parser:
         # check (
         if self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
             # inner expression
-            node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=self.z_expression())
+            node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=self.z_expression_excl())
 
             # check )
             if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
