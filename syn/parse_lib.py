@@ -15,3 +15,4 @@ class LibParse:
     SUB = 'SUB'
     IF = 'IF'
     FOR = 'FOR'
+    NOOP = 'NOOP'

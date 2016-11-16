@@ -86,9 +86,9 @@ class Parser:
         # skip `(`
         self.get_token_next()
 
-        for_init = None
-        for_condition = None
-        for_after = None
+        for_init = Node(LibParse.NOOP, None)
+        for_condition = Node(LibParse.NOOP, None)
+        for_after = Node(LibParse.NOOP, None)
 
         # for: try parse for_init part
         if self.get_token_type() is not LibState.STATE_SEMICOLON:
@@ -119,7 +119,8 @@ class Parser:
 
         return Node(LibParse.FOR, for_st, op1=for_init, op2=for_condition, op3=for_after, op4=for_body)
 
-    # selection-st
+    # selection-st: if (expression) statement
+    #               if (expression) statement else statement
     def z_selection_st(self):
 
         # if
@@ -269,4 +270,3 @@ class Parser:
 
         if node.op4 is not None:
             self.show_node(node.op4, level + 1)
-
