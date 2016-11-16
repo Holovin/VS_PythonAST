@@ -405,7 +405,7 @@ class StateLetterF(StateAbstract):
         if char == 'o':
             return StateFo()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_F
@@ -416,7 +416,7 @@ class StateFo(StateAbstract):
         if char == 'r':
             return StateFor()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_FO
@@ -437,7 +437,7 @@ class StateLetterD(StateAbstract):
         if char == 'o':
             return StateDo()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_D
@@ -448,7 +448,7 @@ class StateDo(StateAbstract):
         if char == 'u':
             return StateDou()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_DO
@@ -459,7 +459,7 @@ class StateDou(StateAbstract):
         if char == 'b':
             return StateDoub()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_DOU
@@ -470,7 +470,7 @@ class StateDoub(StateAbstract):
         if char == 'l':
             return StateDoubl()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_DOUB
@@ -481,7 +481,7 @@ class StateDoubl(StateAbstract):
         if char == 'e':
             return StateDouble()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_DOUBL
@@ -505,7 +505,7 @@ class StateLetterI(StateAbstract):
         if char == 'n':
             return StateIn()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_I
@@ -525,7 +525,7 @@ class StateIn(StateAbstract):
         if char == 't':
             return StateInt()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_IN
@@ -546,7 +546,7 @@ class StateLetterE(StateAbstract):
         if char == 'l':
             return StateEl()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_EL
@@ -557,7 +557,7 @@ class StateEl(StateAbstract):
         if char == 's':
             return StateEls()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_EL
@@ -568,7 +568,7 @@ class StateEls(StateAbstract):
         if char == 'e':
             return StateElse()
 
-        return StateIdentityInput()
+        return end_keyword_or_id_check(char)
 
     def get_str_name(self):
         return LibState.STATE_ELS
