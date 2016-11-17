@@ -143,8 +143,15 @@ class Parser:
                 self.error('Wrong identity name (1)')
 
             # TODO: save context?
-            node = Node(LibParse.VAR_INT, self.get_token_current_and_skip()
-)
+            node = Node(LibParse.VAR_INT, self.get_token_current_and_skip())
+
+            # check `;`
+            if self.get_token_type() is not LibState.STATE_SEMICOLON:
+                self.error('Wait `;` after var declaration')
+
+            # skip `;`
+            self.get_token_next()
+
         # double IDENTITY
         elif self.get_token_type() is LibState.STATE_DOUBLE:
             # skip `double`
@@ -156,6 +163,13 @@ class Parser:
 
             # take id
             node = Node(LibParse.VAR_DOUBLE, self.get_token_current_and_skip())
+
+            # check `;`
+            if self.get_token_type() is not LibState.STATE_SEMICOLON:
+                self.error('Wait `;` after var declaration')
+
+            # skip `;`
+            self.get_token_next()
 
         # error
         else:
