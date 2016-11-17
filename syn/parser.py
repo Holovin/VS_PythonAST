@@ -209,7 +209,7 @@ class Parser:
         self.get_token_next()
 
         # for: try parse for_after part
-        if self.get_token_type() is not LibState.STATE_SEMICOLON:
+        if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
             for_after = self.z_expression_logic()
 
         # check `)`
