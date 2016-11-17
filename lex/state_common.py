@@ -343,6 +343,8 @@ class StateMore(StateAbstract):
         if char == LibState.CHAR_EQUAL:
             return StateMoreEqual()
 
+        return StateEnd()
+
     def get_str_name(self):
         return LibState.STATE_MORE
 
