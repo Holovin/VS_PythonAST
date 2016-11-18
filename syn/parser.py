@@ -43,13 +43,12 @@ class Parser:
 
     def error(self, message):
         logging.error("Error at %d position: found: %s. %s", self.get_token_current().get_pos(), self.get_token_type(), message)
-        exit(1)
 
     def parse(self):
         node = Node(LibParse.PROGRAM, None, op1=self.z_statement())
 
         if self.get_token_type() is not LibState.STATE_EOF:
-            logging.error('Invalid statement! END')
+            logging.error('Invalid statement at end!')
 
         return node
 
@@ -102,14 +101,14 @@ class Parser:
         return Node(LibParse.COMPOUND_ST, compound_st, op1=body)
 
     # block-item-list: block-item
-    #                  block-item-list block-item [?]
+    #                  block-item-list block-item
     def z_block_item_list(self):
 
         # block-item
         node = self.z_block_item()
 
-        # TODO: refactor
-        while self.get_token_type() is not LibState.STATE_BRACE_FIG_CLOSE and node is not None:
+        # chain mode
+        while self.get_token_type() not in [LibState.STATE_BRACE_FIG_CLOSE, LibState.STATE_EOF] and node is not None:
             node = Node(LibParse.LIST, None, op1=node, op2=self.z_block_item())
 
         return node
@@ -432,6 +431,8 @@ class Parser:
         # unknown
         else:
             self.error("Unknown state, possible wait ( or ; symbols")
+            if self.get_token_next() is None:
+                return
 
     def show_node(self, node, level):
         padding = '.' * level * 3
