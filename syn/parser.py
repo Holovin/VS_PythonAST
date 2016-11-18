@@ -252,8 +252,13 @@ class Parser:
     # expression-st: expression [opt];
     def z_expression_st(self):
 
+        # if empty expression
+        if self.get_token_type() is LibState.STATE_SEMICOLON:
+            self.get_token_next()
+            return Node(LibParse.NOOP, None)
+
         # expression_logic
-        node = Node(LibParse.EXPRESSION_ST, None, op1=self.z_expression_logic())
+        node = self.z_expression_logic()  # Node(LibParse.EXPRESSION_ST, None, op1=self.z_expression_logic())
 
         if self.get_token_type() is not LibState.STATE_SEMICOLON:
             self.error('Waiting ; symbol ')
@@ -401,10 +406,14 @@ class Parser:
 
     # (expression)
     # NOTE: helper function for prevent code duplicate
-    def y_brace_handler(self):
+    def y_brace_handler(self, err_opt=''):
 
         # check (
         if self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
+            # err empty state
+            if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
+                self.error('Empty (...) state')
+
             # inner expression
             node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=self.z_expression_logic())
 
@@ -419,7 +428,7 @@ class Parser:
 
         # unknown
         else:
-            self.error("Unknown state, possible wait ( symbol")
+            self.error("Unknown state, possible wait ( or ; symbols")
 
     def show_node(self, node, level):
         padding = '.' * level * 3
