@@ -410,12 +410,15 @@ class Parser:
 
         # check (
         if self.get_token_type() is LibState.STATE_BRACE_CIRCLE_OPEN:
+
+            current_token = self.get_token_current_and_skip()
+
             # err empty state
-            if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
+            if self.get_token_type() is LibState.STATE_BRACE_CIRCLE_CLOSE:
                 self.error('Empty (...) state')
 
             # inner expression
-            node = Node(LibParse.EXPRESSION_INNER, self.get_token_current_and_skip(), op1=self.z_expression_logic())
+            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression_logic())
 
             # check )
             if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:
