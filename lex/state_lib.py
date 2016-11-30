@@ -1,19 +1,12 @@
 class LibState:
     # single chars
-    CHAR_DOT = '.'
     CHAR_SPACE = ' '
     CHAR_SEMICOLON = ';'
-    CHAR_V_LINE = '|'
     CHAR_SLASH = '/'
     CHAR_EQUAL = '='
-    CHAR_AMP = '&'
-    CHAR_LESS = '<'
-    CHAR_MORE = '>'
     CHAR_MINUS = '-'
     CHAR_PLUS = '+'
     CHAR_MUL = '*'
-    CHAR_PERCENT = '%'
-    CHAR_EXCL = '!'
     CHAR_CARET = '\r'
     CHAR_NEW_LINE = '\n'
 
@@ -37,36 +30,18 @@ class LibState:
     STATE_BRACE_CIRCLE_CLOSE = 'Brace: `)` (circle close)'
 
     # single symbols
-    STATE_EXCL = 'Single: `!`'
     STATE_SEMICOLON = 'Single: `;`'
-    STATE_SLASH = 'Single: `/`'
-
+    
     # math and arithmetic
-    STATE_PERCENT = 'Single: `%`'
-    STATE_MUL = 'Single: `*`'
     STATE_PLUS = 'Single: `+`'
     STATE_MINUS = 'Single: `-`'
-
-    # single with pair
-    STATE_AMP = 'Single: `&`'
-    STATE_AMP_TWICE = 'Double: `&&`'
-
-    STATE_V_LINE = 'Single: `|`'
-    STATE_V_LINE_TWICE = 'Double: `||`'
+    STATE_MUL = 'Single: `*`'
+    STATE_SLASH = 'Single: `/`'
 
     STATE_EQUAL = 'Single: `=`'
-    STATE_EQUAL_TWICE = 'Double: `==`'
-
-    STATE_LESS = 'Single: `<`'
-    STATE_LESS_EQUAL = 'Double: `<=`'
-
-    STATE_MORE = 'Single: `>`'
-    STATE_MORE_EQUAL = 'Double: `>=`'
 
     # numbers
-    STATE_INTEGER_NUMBER = 'Integer: value'
-    STATE_DOUBLE_NUMBER_START = STATE_INTEGER_NUMBER  # 12. = 12
-    STATE_DOUBLE_NUMBER = 'Double: value'
+    STATE_NUMBER = 'Integer: value'
 
     # vars
     STATE_IDENTITY = 'Identity'
@@ -74,27 +49,6 @@ class LibState:
     # i - if - int
     STATE_I = STATE_IDENTITY
     STATE_IF = 'IF'
-    STATE_IN = STATE_IDENTITY
-    STATE_INT = 'INT'
-
-    # e - el - els - else
-    STATE_E = STATE_IDENTITY
-    STATE_EL = STATE_IDENTITY
-    STATE_ELS = STATE_IDENTITY
-    STATE_ELSE = 'ELSE'
-
-    # f - fo - for
-    STATE_F = STATE_IDENTITY
-    STATE_FO = STATE_IDENTITY
-    STATE_FOR = 'FOR'
-
-    # d - do - dou - doub - doubl - double
-    STATE_D = STATE_IDENTITY
-    STATE_DO = STATE_IDENTITY
-    STATE_DOU = STATE_IDENTITY
-    STATE_DOUB = STATE_IDENTITY
-    STATE_DOUBL = STATE_IDENTITY
-    STATE_DOUBLE = 'DOUBLE'
 
     # other
     STATE_SPACE = 'Single: ` `'
