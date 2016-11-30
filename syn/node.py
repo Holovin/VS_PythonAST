@@ -10,8 +10,6 @@ class Node:
     # nodes
     op1 = None
     op2 = None
-    op3 = None
-    op4 = None
 
     def __init__(self, name, state, result=None, op1=None, op2=None):
         self.name = name                # Parser.*

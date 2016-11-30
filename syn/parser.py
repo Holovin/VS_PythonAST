@@ -110,7 +110,7 @@ class Parser:
 
     # selection-st: if (expression) statement
     def z_selection_st(self):
-        
+
         # if
         if_st = self.get_token_current_and_skip()
 
@@ -248,15 +248,15 @@ class Parser:
             if self.get_token_next() is None:
                 return
 
-    def show_node(self, node, level):
+    def show_node(self, node, level, id=0):
         padding = '.' * level * 3
         name = node.get_name()
         value = node.get_state().__str__()
 
-        logging.debug('%s | name: %s | %s', padding, name, value)
+        logging.debug('(%d) %s | name: %s | %s', id, padding, name, value)
 
         if node.op1 is not None:
-            self.show_node(node.op1, level + 1)
+            self.show_node(node.op1, level + 1, 1)
 
         if node.op2 is not None:
-            self.show_node(node.op2, level + 1)
+            self.show_node(node.op2, level + 1, 2)
