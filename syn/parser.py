@@ -20,7 +20,7 @@ class Parser:
 
     def get_token_next(self):
         if self.tokens_size <= self.index + 1:
-            logging.debug("Trying take next, when is empty (size: %d <= try take: %d)", self.tokens_size, self.index+1)
+            logging.debug('[SYN] Trying take next, when is empty (size: %d <= try take: %d)', self.tokens_size, self.index + 1)
             return None
 
         self.index += 1
@@ -42,13 +42,14 @@ class Parser:
         return current
 
     def error(self, message):
-        logging.error('[PARSER] Error at %d position: found: %s. %s', self.get_token_current().get_pos(), self.get_token_type(), message)
+        logging.error('[SYN] Error at %d line and %d position: found: %s. %s', self.get_token_current().get_line(), self.get_token_current().get_pos(), self.get_token_type(), message)
+        exit()
 
     def parse(self):
         node = Node(LibParse.PROGRAM, None, op1=self.z_statement())
 
         if self.get_token_type() is not LibState.STATE_EOF:
-            logging.error('Invalid statement at end!')
+            logging.error('[SYN] Invalid statement at end!')
 
         return node
 
@@ -297,7 +298,7 @@ class Parser:
         value = node.get_state().__str__()
         result = node.get_result()
 
-        logging.debug('(%d) %s | name: %s | %s | result: %s', id, padding, name, value, result)
+        logging.debug('[SYN] (%d) %s | name: %s | %s | result: %s', id, padding, name, value, result)
 
         if node.op1 is not None:
             self.show_node(node.op1, level + 1, 1)

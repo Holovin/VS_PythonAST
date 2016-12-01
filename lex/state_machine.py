@@ -51,7 +51,7 @@ class StateMachine:
 
         data = StateData(self.current_state.get_str_name(), LibState.TYPE_ERROR, self.lex_text, self.display_line, self.display_index, self.lex_length)
         self.output.append(data)
-        logging.warning('Skip bad token: %s at %d line and %d position (global_pos %d, len: %d, type: %s)', self.lex_text, self.display_line, self.display_index, self.index, self.lex_length, LibState.TYPE_ERROR)
+        logging.error('[LEX] Skip bad token: %s at %d line and %d position (global_pos %d, len: %d, type: %s)', self.lex_text, self.display_line, self.display_index, self.index, self.lex_length, LibState.TYPE_ERROR)
 
         self.index += 1
         self.display_index += 1
@@ -69,7 +69,7 @@ class StateMachine:
 
         data = StateData(self.lex.get_str_name(), self.lex.get_str_type(), self.lex_text, self.display_line, self.display_index, self.lex_length)
         self.output.append(data)
-        logging.info('Parse "%s" token: %s at %d line and %d position (global_pos %d, len: %d, type: %s)', self.lex.get_str_name(), self.lex_text.replace('\r\n', '[newline]'), self.display_line, self.display_index, self.index, self.lex_length, self.lex.get_str_type())
+        logging.debug('[LEX] Parse "%s" token: %s at %d line and %d position (global_pos %d, len: %d, type: %s)', self.lex.get_str_name(), self.lex_text.replace('\r\n', '[newline]'), self.display_line, self.display_index, self.index, self.lex_length, self.lex.get_str_type())
         self.__clear_lex()
 
     def __do_lex(self):

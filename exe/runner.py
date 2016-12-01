@@ -84,7 +84,7 @@ class Runner:
                     value = node.op2.get_result().value
 
                 else:
-                    return self.error(node, 'Incorrect SET statement (need DataStore value, but take %s)' % node.op2.get_name())
+                    return self.error(node, 'Incorrect SET statement (need ID or VALUE, but take %s)' % node.op2.get_name())
 
                 node.result = DataStore(ExeLib.TYPE_NUMBER, value)
                 self.scope[node.op1.get_result().value] = DataStore(ExeLib.TYPE_NUMBER, value)
@@ -184,4 +184,4 @@ class Runner:
             return value, None
 
         else:
-            return self.error(op_node, 'Incorrect %s statement (need DataStore value, but take %s)' % (op_name, op_node.get_name()))
+            return self.error(op_node, 'Incorrect %s statement (need ID or VALUE, but take %s)' % (op_name, op_node.get_name()))
