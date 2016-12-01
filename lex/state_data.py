@@ -20,6 +20,9 @@ class StateData:
     def get_pos(self):
         return self.start_position
 
+    def get_line(self):
+        return self.line
+
     def get_value(self):
         return self.text
 

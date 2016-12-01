@@ -12,7 +12,7 @@ class Runner:
         self.tree = self.execute(syn_tree)
 
     def error(self, node, message):
-        logging.error('[EXE] Error at %d position: %s', node.get_state().get_pos(), message)
+        logging.error('[EXE] Error at %d line and %d position: %s', node.get_state().get_line(), node.get_state().get_pos(), message)
         exit()
         return Node(LibParse.NOOP, None)
 
@@ -43,8 +43,21 @@ class Runner:
                 node.op1 = self.execute(node.op1)
 
             # try run 2nd operator
-            if node.op2 is not None:
+            if node.op2 is not None and node.get_name() is not LibParse.IF:
                 node.op2 = self.execute(node.op2)
+
+            # IF | if (?) ?
+            if node.get_name() is LibParse.IF:
+                logging.fatal(node.op1.get_result())
+                val_condition, err = self._check_var_calc(node.op1, LibParse.IF)
+
+                if err is not None:
+                    return err
+
+                if val_condition != 0:
+                    node.op2 = self.execute(node.op2)
+
+                return node
 
             # [NON-END] OP1/OP2 nodes
             # (...) <- just transport value
@@ -52,7 +65,7 @@ class Runner:
                 node.result = node.op1.get_result()
                 return node
 
-            # set
+            # SET | VAR = ?
             if node.get_name() is LibParse.SET:
                 # check op1 for var name
                 if node.op1.get_name() is not LibParse.VARIABLE:
@@ -158,7 +171,7 @@ class Runner:
 
     def _check_var_calc(self, op_node, op_name):
         # check if var exist in scope
-        if op_node.get_name() is LibParse.VARIABLE:
+        if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VARIABLE:
             if self.scope.get(op_node.get_result().value) is None:
                 return None, self.error(op_node, 'Incorrect %s statement (variable [ %s ] is not exist)' % (op_name, op_node.get_result()))
 
