@@ -295,8 +295,9 @@ class Parser:
         padding = '.' * level * 3
         name = node.get_name()
         value = node.get_state().__str__()
+        result = node.get_result()
 
-        logging.debug('(%d) %s | name: %s | %s', id, padding, name, value)
+        logging.debug('(%d) %s | name: %s | %s | result: %s', id, padding, name, value, result)
 
         if node.op1 is not None:
             self.show_node(node.op1, level + 1, 1)

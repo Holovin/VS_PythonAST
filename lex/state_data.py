@@ -18,5 +18,8 @@ class StateData:
     def get_pos(self):
         return self.start_position
 
+    def get_value(self):
+        return self.text
+
     def __str__(self):
         return 'Name: %s, value: %s, pos: %d, len: %d' % (self.state_class, self.text, self.start_position, self.length)

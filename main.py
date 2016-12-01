@@ -2,6 +2,7 @@
 import codecs
 import logging
 
+from exe.runner import Runner
 from lex.state_lib import LibState
 from lex.state_machine import StateMachine
 from syn.parser import Parser
@@ -23,6 +24,11 @@ def main():
     pr = Parser(sm.get_tokens([LibState.TYPE_OK]))
     tree = pr.parse()
     pr.show_node(tree, 1)
+
+    ex = Runner(tree)
+
+    pr.show_node(ex.tree, 1)
+    logging.debug(ex.scope)
 
     return
 

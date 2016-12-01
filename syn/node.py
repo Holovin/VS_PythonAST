@@ -24,3 +24,9 @@ class Node:
 
     def get_state(self):
         return self.state
+
+    def get_value(self):
+        return self.state.get_value()
+
+    def get_result(self):
+        return self.result
