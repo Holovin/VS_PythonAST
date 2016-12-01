@@ -18,7 +18,6 @@ class LibParse:
     DIV = 'DIV'
 
     IF = 'IF'
-    INT = 'INT'
     VAR_INT = 'VAR_INT'
 
     NOOP = 'NOOP'
