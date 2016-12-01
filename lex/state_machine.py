@@ -10,6 +10,8 @@ class StateMachine:
     # common
     current_state = StateStart()
     index = 0
+    display_line = 0
+    display_index = 0
     index_last = 0
     input_text = ''
 
@@ -29,11 +31,17 @@ class StateMachine:
 
     def reset_data(self):
         self.current_state = StateStart()
+        self.display_index = 1
+        self.display_line = 1
         self.index = 0
         self.index_last = 0
         self.input_text = ''
         self.output = []
         self.__clear_lex()
+
+    def __new_line(self):
+        self.display_line += 1
+        self.display_index = -1
 
     def __skip_data(self):
         # fill last char if empty
@@ -41,24 +49,27 @@ class StateMachine:
             self.lex_length = 1
             self.lex_text = self.input_text[self.index]
 
-        data = StateData(self.current_state.get_str_name(), LibState.TYPE_ERROR, self.lex_text, self.lex_start_position, self.lex_length)
+        data = StateData(self.current_state.get_str_name(), LibState.TYPE_ERROR, self.lex_text, self.display_line, self.display_index, self.lex_length)
         self.output.append(data)
-        logging.warning('[LEXER] Skip bad token: %s at %d position (len: %d, type: %s)', self.lex_text, self.lex_start_position, self.lex_length, LibState.TYPE_ERROR)
+        logging.warning('Skip bad token: %s at %d line and %d position (global_pos %d, len: %d, type: %s)', self.lex_text, self.display_line, self.display_index, self.index, self.lex_length, LibState.TYPE_ERROR)
 
         self.index += 1
+        self.display_index += 1
         self.__clear_lex()
 
     def __clear_lex(self):
+        self.display_index += self.lex_length - 1
         self.lex_length = 0
-        self.lex_start_position = self.index
         self.lex_text = ''
         self.lex = None
         self.current_state = StateStart()
 
     def __end_lex(self):
-        data = StateData(self.lex.get_str_name(), self.lex.get_str_type(), self.lex_text, self.lex_start_position, self.lex_length)
+        self.display_index -= self.lex_length - 1
+
+        data = StateData(self.lex.get_str_name(), self.lex.get_str_type(), self.lex_text, self.display_line, self.display_index, self.lex_length)
         self.output.append(data)
-        logging.info('[LEXER] Parse "%s" token: %s at %d position (len: %d, type: %s)', self.lex.get_str_name(), self.lex_text, self.lex_start_position, self.lex_length, self.lex.get_str_type())
+        logging.info('Parse "%s" token: %s at %d line and %d position (global_pos %d, len: %d, type: %s)', self.lex.get_str_name(), self.lex_text.replace('\r\n', '[newline]'), self.display_line, self.display_index, self.index, self.lex_length, self.lex.get_str_type())
         self.__clear_lex()
 
     def __do_lex(self):
@@ -66,8 +77,13 @@ class StateMachine:
         self.lex_text += self.input_text[self.index]
         self.lex_length += 1
         self.index += 1
+        self.display_index += 1
 
     def check(self):
+        # helper
+        if self.current_state.get_str_name() == LibState.STATE_NEW_LINE:
+            self.__new_line()
+
         # something wrong
         if self.current_state.get_str_name() == LibState.STATE_ERROR:
             self.__skip_data()
@@ -95,8 +111,7 @@ class StateMachine:
             self.current_state = self.current_state.get_next_state(self.input_text[self.index])
             self.check()
 
-        self.output.append(StateData(LibState.STATE_EOF, LibState.TYPE_OK, '', len(self.input_text), 0))
-
+        self.output.append(StateData(LibState.STATE_EOF, LibState.TYPE_OK, '', self.display_line, self.display_index, 0))
         return
 
     def get_tokens(self, state=None):
