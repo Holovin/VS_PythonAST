@@ -95,16 +95,59 @@ class Parser:
 
         return Node(LibParse.COMPOUND_ST, compound_st, op1=body)
 
-    # block-item-list: statement
+    # block-item-list: block-item
     #                  block-item-list statement
     def z_block_item_list(self):
 
         # block-item
-        node = self.z_statement()
+        node = self.z_block_item()
 
         # chain mode
         while self.get_token_type() not in [LibState.STATE_BRACE_FIG_CLOSE, LibState.STATE_EOF] and node is not None:
-            node = Node(LibParse.LIST, None, op1=node, op2=self.z_statement())
+            node = Node(LibParse.LIST, None, op1=node, op2=self.z_block_item())
+
+        return node
+
+    # block-item: declaration
+    #             statement
+    def z_block_item(self):
+
+        # declaration
+        if self.get_token_type() is LibState.STATE_INT:
+            node = self.z_declaration()
+
+        # statement
+        else:
+            node = self.z_statement()
+
+        return node
+
+    # declaration: int IDENTITY
+    def z_declaration(self):
+        node = None
+
+        # int IDENTITY
+        if self.get_token_type() is LibState.STATE_INT:
+            # skip `int`
+            st = self.get_token_current_and_skip()
+
+            # check id
+            if self.get_token_type() is not LibState.STATE_IDENTITY:
+                self.error('Wrong identity name (1)')
+
+            # TODO: save context?
+            node = Node(LibParse.VAR_INT, self.get_token_current_and_skip())
+
+            # check `;`
+            if self.get_token_type() is not LibState.STATE_SEMICOLON:
+                self.error('Wait `;` after var declaration')
+
+            # skip `;`
+            self.get_token_next()
+
+        # error
+        else:
+            self.error('Unknown variable declaration')
 
         return node
 

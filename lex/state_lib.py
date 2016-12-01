@@ -48,7 +48,9 @@ class LibState:
 
     # i - if - int
     STATE_I = STATE_IDENTITY
+    STATE_IN = STATE_IDENTITY
     STATE_IF = 'IF'
+    STATE_INT = 'INT'
 
     # other
     STATE_SPACE = 'Single: ` `'

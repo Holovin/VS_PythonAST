@@ -29,7 +29,7 @@ class StateStart(StateAbstract):
         if re.search('\d', char):
             return StateInteger()
 
-        # i: [identity] or IF
+        # i: [identity] or IF or INT
         if char == 'i':
             return StateLetterI()
 
@@ -257,6 +257,9 @@ class StateLetterI(StateAbstract):
         if char == 'f':
             return StateIf()
 
+        if char == 'n':
+            return StateIn()
+
         return end_keyword_or_id_check(char)
 
     def get_str_name(self):
@@ -271,6 +274,25 @@ class StateIf(StateAbstract):
     def get_str_name(self):
         return LibState.STATE_IF
 
+
+# INT
+class StateIn(StateAbstract):
+    def get_next_state(self, char):
+        if char == 't':
+            return StateInt()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_IN
+
+
+class StateInt(StateAbstract):
+    def get_next_state(self, char):
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_INT
 
 ########################################################################################################################
 # Identity
