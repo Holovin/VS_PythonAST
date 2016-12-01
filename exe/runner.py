@@ -162,7 +162,7 @@ class Runner:
             if self.scope.get(op_node.get_result().value) is None:
                 return None, self.error(op_node, 'Incorrect %s statement (variable [ %s ] is not exist)' % (op_name, op_node.get_result()))
 
-            value = self.scope[op_node.get_result().value]
+            value = self.scope[op_node.get_result().value].value
             return value, None
 
         # try get value and check type from result
