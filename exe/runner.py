@@ -48,7 +48,6 @@ class Runner:
 
             # IF | if (?) ?
             if node.get_name() is LibParse.IF:
-                logging.fatal(node.op1.get_result())
                 val_condition, err = self._check_var_calc(node.op1, LibParse.IF)
 
                 if err is not None:
