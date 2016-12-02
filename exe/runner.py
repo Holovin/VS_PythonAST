@@ -177,6 +177,9 @@ class Runner:
         # TODO: remove it
         return node
 
+    def get_scope(self):
+        return self.scope
+
     def _check_var_calc(self, scope, op_node, op_name):
         # check if var exist in scope
         if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VARIABLE:

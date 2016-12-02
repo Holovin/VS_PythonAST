@@ -1,5 +1,6 @@
 import logging
 
+from config import Config
 from lex.state_lib import LibState
 from syn.node import Node
 from syn.parse_lib import LibParse
@@ -294,7 +295,8 @@ class Parser:
 
     @staticmethod
     def show_node(node, level, op_id=0):
-        padding = '.' * level * 3
+        padding = Config.LOG_PADDING_CHAR * level * Config.LOG_PADDING_MUL
+
         name = node.get_name()
         value = node.get_state().__str__()
         result = node.get_result()
