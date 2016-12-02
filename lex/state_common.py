@@ -195,6 +195,9 @@ class StatePlus(StateAbstract):
 # Single: -
 class StateMinus(StateAbstract):
     def get_next_state(self, char):
+        if re.search('\d', char):
+            return StateInteger()
+
         return StateEnd()
 
     def get_str_name(self):
