@@ -29,11 +29,12 @@ def main():
 
     # EXE
     ex = Runner(tree)
+    logging.debug('')
+
     pr.show_node(ex.tree, 1)
+    logging.debug('')
+
     Scope.show_scope(ex.get_scope())
-
-
-    return
 
 if __name__ == "__main__":
     logging.basicConfig(format=Config.LOG_FORMAT, level=Config.LOG_LEVEL)
