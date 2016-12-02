@@ -292,16 +292,17 @@ class Parser:
             if self.get_token_next() is None:
                 return
 
-    def show_node(self, node, level, id=0):
+    @staticmethod
+    def show_node(node, level, op_id=0):
         padding = '.' * level * 3
         name = node.get_name()
         value = node.get_state().__str__()
         result = node.get_result()
 
-        logging.debug('[SYN] (%d) %s | name: %s | %s | result: %s', id, padding, name, value, result)
+        logging.debug('[SYN] (%d) %s | name: %s | %s | result: %s', op_id, padding, name, value, result)
 
         if node.op1 is not None:
-            self.show_node(node.op1, level + 1, 1)
+            Parser.show_node(node.op1, level + 1, 1)
 
         if node.op2 is not None:
-            self.show_node(node.op2, level + 1, 2)
+            Parser.show_node(node.op2, level + 1, 2)
