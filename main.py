@@ -28,7 +28,6 @@ def main():
     ex = Runner(tree)
 
     pr.show_node(ex.tree, 1)
-    logging.debug(ex.scope)
 
     return
 

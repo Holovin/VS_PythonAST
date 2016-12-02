@@ -8,3 +8,9 @@ class DataStore:
 
     def get_type(self):
         return self.data_type
+
+    def set_value(self, data_type, value):
+        # TODO: check various types when needed
+        self.value = value
+
+        return value

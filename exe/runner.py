@@ -2,23 +2,30 @@ import logging
 
 from exe.data_store import DataStore
 from exe.exe_lib import ExeLib
+from exe.scope import Scope
 from syn.node import Node
 from syn.parse_lib import LibParse
 
 
 class Runner:
     def __init__(self, syn_tree):
-        self.scope = {}
-        self.tree = self.execute(syn_tree)
+        self.scope = Scope(None)
+        self.tree = self.execute(syn_tree, self.scope)
 
     def error(self, node, message):
         logging.error('[EXE] Error at %d line and %d position: %s', node.get_state().get_line(), node.get_state().get_pos(), message)
         exit()
         return Node(LibParse.NOOP, None)
 
-    def execute(self, node):
+    def execute(self, node, scope):
+        current_scope = scope
+
         # check if has result > go deeper
         if node.result is None:
+            # create new scope
+            if node.get_name() is LibParse.COMPOUND_ST:
+                current_scope = Scope(scope)
+                scope.add_child(current_scope)
 
             # [END] NO-OP nodes
             # number
@@ -34,27 +41,27 @@ class Runner:
             # int declaration
             if node.get_name() is LibParse.VAR_INT:
                 node.result = DataStore(ExeLib.TYPE_NUMBER, 0)
-                self.scope[node.get_value()] = DataStore(ExeLib.TYPE_NUMBER, 0)
+                current_scope.add_value(node.get_value(), ExeLib.TYPE_NUMBER, 0)
                 return node
 
             # [EXECUTE NODES]
             # try run 1st operator
             if node.op1 is not None:
-                node.op1 = self.execute(node.op1)
+                node.op1 = self.execute(node.op1, current_scope)
 
             # try run 2nd operator
             if node.op2 is not None and node.get_name() is not LibParse.IF:
-                node.op2 = self.execute(node.op2)
+                node.op2 = self.execute(node.op2, current_scope)
 
             # IF | if (?) ?
             if node.get_name() is LibParse.IF:
-                val_condition, err = self._check_var_calc(node.op1, LibParse.IF)
+                val_condition, err = self._check_var_calc(current_scope, node.op1, LibParse.IF)
 
                 if err is not None:
                     return err
 
                 if val_condition != 0:
-                    node.op2 = self.execute(node.op2)
+                    node.op2 = self.execute(node.op2, current_scope)
 
                 return node
 
@@ -71,12 +78,12 @@ class Runner:
                     return self.error(node, 'Incorrect SET statement (need variable name, but take %s)' % node.op1.get_name())
 
                 # check if var exist in scope
-                if self.scope.get(node.op1.get_result().value) is None:
+                if current_scope.get_value(node.op1.get_result().value) is None:
                     return self.error(node, 'Incorrect SET statement (variable [ %s ] is not exist)' % node.op1.get_result())
 
                 # try get op2 value from scope
                 if node.op2.get_name() is LibParse.VARIABLE:
-                    value = self.scope[node.op2.get_result().value]
+                    value = current_scope.get_value(node.op2.get_result().value)
 
                 # try get op2 value and check type from result)
                 elif type(node.op2.get_result()) is DataStore and node.op2.get_result().get_type() is ExeLib.TYPE_NUMBER:
@@ -86,19 +93,20 @@ class Runner:
                     return self.error(node, 'Incorrect SET statement (need ID or VALUE, but take %s)' % node.op2.get_name())
 
                 node.result = DataStore(ExeLib.TYPE_NUMBER, value)
-                self.scope[node.op1.get_result().value] = DataStore(ExeLib.TYPE_NUMBER, value)
+                current_scope.set_value(node.op1.get_result().value, ExeLib.TYPE_NUMBER, value)
+
                 return node
 
             # ADD | ? + ?
             if node.get_name() is LibParse.ADD:
                 # check op1
-                val_op1, err = self._check_var_calc(node.op1, LibParse.ADD)
+                val_op1, err = self._check_var_calc(scope, node.op1, LibParse.ADD)
 
                 if err is not None:
                     return err
 
                 # check op2
-                val_op2, err = self._check_var_calc(node.op2, LibParse.ADD)
+                val_op2, err = self._check_var_calc(scope, node.op2, LibParse.ADD)
 
                 if err is not None:
                     return err
@@ -109,13 +117,13 @@ class Runner:
             # SUB | ? - ?
             if node.get_name() is LibParse.SUB:
                 # check op1
-                val_op1, err = self._check_var_calc(node.op1, LibParse.SUB)
+                val_op1, err = self._check_var_calc(scope, node.op1, LibParse.SUB)
 
                 if err is not None:
                     return err
 
                 # check op2
-                val_op2, err = self._check_var_calc(node.op2, LibParse.SUB)
+                val_op2, err = self._check_var_calc(scope, node.op2, LibParse.SUB)
 
                 if err is not None:
                     return err
@@ -126,13 +134,13 @@ class Runner:
             # MUL | ? * ?
             if node.get_name() is LibParse.MUL:
                 # check op1
-                val_op1, err = self._check_var_calc(node.op1, LibParse.MUL)
+                val_op1, err = self._check_var_calc(scope, node.op1, LibParse.MUL)
 
                 if err is not None:
                     return err
 
                 # check op2
-                val_op2, err = self._check_var_calc(node.op2, LibParse.MUL)
+                val_op2, err = self._check_var_calc(scope, node.op2, LibParse.MUL)
 
                 if err is not None:
                     return err
@@ -143,13 +151,13 @@ class Runner:
             # DIV | ? / ?
             if node.get_name() is LibParse.DIV:
                 # check op1
-                val_op1, err = self._check_var_calc(node.op1, LibParse.DIV)
+                val_op1, err = self._check_var_calc(scope, node.op1, LibParse.DIV)
 
                 if err is not None:
                     return err
 
                 # check op2
-                val_op2, err = self._check_var_calc(node.op2, LibParse.DIV)
+                val_op2, err = self._check_var_calc(scope, node.op2, LibParse.DIV)
 
                 if err is not None:
                     return err
@@ -161,20 +169,21 @@ class Runner:
                 node.result = DataStore(ExeLib.TYPE_NUMBER, val_op1 // val_op2)
                 return node
 
+        # get result
+        if node.get_name() is LibParse.PROGRAM:
+            self.scope = scope
+            return node
+
         # TODO: remove it
         return node
 
-        # get result
-        if node.get_name() is LibParse.PROGRAM:
-            return node
-
-    def _check_var_calc(self, op_node, op_name):
+    def _check_var_calc(self, scope, op_node, op_name):
         # check if var exist in scope
         if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VARIABLE:
-            if self.scope.get(op_node.get_result().value) is None:
+            if scope.get_value(op_node.get_result().value):
                 return None, self.error(op_node, 'Incorrect %s statement (variable [ %s ] is not exist)' % (op_name, op_node.get_result()))
 
-            value = self.scope[op_node.get_result().value].value
+            value = scope.get_value(op_node.get_result().value)
             return value, None
 
         # try get value and check type from result
