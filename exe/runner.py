@@ -174,7 +174,7 @@ class Runner:
             self.scope = scope
             return node
 
-        # TODO: remove it
+        # just skip others
         return node
 
     def get_scope(self):
@@ -183,11 +183,12 @@ class Runner:
     def _check_var_calc(self, scope, op_node, op_name):
         # check if var exist in scope
         if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VARIABLE:
-            if scope.get_value(op_node.get_result().value):
+            value, err = scope.get_value(op_node.get_result().value)
+
+            if err is not None:
                 return None, self.error(op_node, 'Incorrect %s statement (variable [ %s ] is not exist)' % (op_name, op_node.get_result()))
 
-            value = scope.get_value(op_node.get_result().value)
-            return value, None
+            return value.value, None
 
         # try get value and check type from result
         elif type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_NUMBER:
