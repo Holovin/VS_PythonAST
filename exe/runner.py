@@ -63,6 +63,9 @@ class Runner:
                 if val_condition != 0:
                     node.op2 = self.execute(node.op2, current_scope)
 
+                else:
+                    self.execute(node.op2, Scope(current_scope, True))
+
                 return node
 
             # [NON-END] OP1/OP2 nodes
@@ -183,9 +186,9 @@ class Runner:
     def _check_var_calc(self, scope, op_node, op_name):
         # check if var exist in scope
         if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VARIABLE:
-            value, err = scope.get_value(op_node.get_result().value)
+            value = scope.get_value(op_node.get_result().value)
 
-            if err is not None:
+            if value is None:
                 return None, self.error(op_node, 'Incorrect %s statement (variable [ %s ] is not exist)' % (op_name, op_node.get_result()))
 
             return value.value, None
