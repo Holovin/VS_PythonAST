@@ -4,7 +4,7 @@ class DataStore:
         self.value = value
 
     def __repr__(self):
-        return 'Type %s, value: %s.' % (self.data_type, self.value)
+        return 'Type %s, value: %s' % (self.data_type, self.value)
 
     def get_type(self):
         return self.data_type
