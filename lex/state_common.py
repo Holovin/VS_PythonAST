@@ -41,6 +41,10 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_SPACE:
             return StateSpace()
 
+        # [#]
+        if char == LibState.CHAR_SHARP:
+            return StateSharp()
+
         # ;
         if char == LibState.CHAR_SEMICOLON:
             return StateSemicolon()
@@ -115,6 +119,21 @@ class StateError(StateAbstract):
 
     def get_str_type(self):
         return LibState.TYPE_ERROR
+
+
+########################################################################################################################
+class StateSharp(StateAbstract):
+    def get_next_state(self, char):
+        if char == LibState.CHAR_NEW_LINE or char == LibState.CHAR_CARET:
+            return StateEnd()
+
+        return StateSharp()
+
+    def get_str_name(self):
+        return LibState.STATE_COMMENT
+
+    def get_str_type(self):
+        return LibState.TYPE_SKIP
 
 
 ########################################################################################################################

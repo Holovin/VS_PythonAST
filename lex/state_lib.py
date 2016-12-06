@@ -56,6 +56,7 @@ class LibState:
     STATE_SPACE = 'Single: ` `'
     STATE_NEW_LINE = 'Single: `\\n`'
     STATE_CARET = 'Single: `\\r`'
+    STATE_COMMENT = '[Comment]'
 
     #
     STATES_WRONG_END = []

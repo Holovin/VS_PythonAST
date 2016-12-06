@@ -1,0 +1,34 @@
+{
+
+    int a;
+    int b;
+    b = 1 * (1 / 2) + 1111;
+    a = a + b;
+
+    if (0) {
+        a = 1;
+    }
+
+    if (0 * 1) {
+        a = 1;
+    }
+
+    if (a * 0) {
+        int inner_scope_1;
+        b = 6;
+    }
+
+    if (-2) {
+        int inner_scope_2;
+        b = 5555555;
+
+        if (b) {
+            int inner_scope_3;
+            int c;
+            c = 2 * 4444;
+        }
+    }
+
+    int d;
+    d = a - b;
+}

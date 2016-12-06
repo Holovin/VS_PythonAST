@@ -29,7 +29,7 @@ class Runner:
 
             # [END] NO-OP nodes
             # number
-            if node.get_name() is LibParse.NUMBER:
+            if node.get_name() is LibParse.VAL_NUMBER:
                 node.result = DataStore(ExeLib.TYPE_NUMBER, int(node.get_value()))
                 return node
 

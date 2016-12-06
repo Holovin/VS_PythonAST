@@ -255,7 +255,7 @@ class Parser:
 
         # numbers
         elif self.get_token_type() is LibState.STATE_NUMBER:
-            node = Node(LibParse.NUMBER, self.get_token_current())
+            node = Node(LibParse.VAL_NUMBER, self.get_token_current())
             self.get_token_next()
             return node
 
