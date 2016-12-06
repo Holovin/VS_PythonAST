@@ -115,7 +115,7 @@ class Parser:
     def z_block_item(self):
 
         # declaration
-        if self.get_token_type() is LibState.STATE_INT:
+        if self.get_token_type() is LibState.STATE_VAR:
             node = self.z_declaration()
 
         # statement
@@ -124,12 +124,12 @@ class Parser:
 
         return node
 
-    # declaration: int IDENTITY
+    # declaration: var IDENTITY
     def z_declaration(self):
         node = None
 
-        # int IDENTITY
-        if self.get_token_type() is LibState.STATE_INT:
+        # var IDENTITY
+        if self.get_token_type() is LibState.STATE_VAR:
             # skip `int`
             st = self.get_token_current_and_skip()
 
@@ -137,8 +137,7 @@ class Parser:
             if self.get_token_type() is not LibState.STATE_IDENTITY:
                 self.error('Wrong identity name (1)')
 
-            # TODO: save context?
-            node = Node(LibParse.VAR_INT, self.get_token_current_and_skip())
+            node = Node(LibParse.VAR_DECLARATION, self.get_token_current_and_skip())
 
             # check `;`
             if self.get_token_type() is not LibState.STATE_SEMICOLON:
@@ -153,13 +152,13 @@ class Parser:
 
         return node
 
-    # selection-st: if (expression) statement
+    # selection-st: if (expression_less_more) statement
     def z_selection_st(self):
 
         # if
         if_st = self.get_token_current_and_skip()
 
-        # (expression)
+        # (expression_less_more)
         expression = self.y_brace_handler()
 
         # statement
@@ -167,7 +166,7 @@ class Parser:
 
         return Node(LibParse.IF, if_st, op1=expression, op2=statement)
 
-    # expression-st: expression [opt];
+    # expression-st: expression_set [opt];
     def z_expression_st(self):
 
         # if empty expression
@@ -187,16 +186,34 @@ class Parser:
 
         return node
 
-    # expression_set: id = expression
-    #                 expression
+    # expression_set: id = expression_cmp_less_more
+    #                 expression_cmp_less_more
     def z_expression_set(self):
 
-        # expression
+        # expression_cmp_less_more
+        node = self.z_expression_less_more()
+
+        # [result == id] = ...
+        if node is not None and node.get_name() is LibParse.VAR_VAR and self.get_token_type() is LibState.STATE_EQUAL:
+            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_less_more())
+
+        return node
+
+    # expression_cmp_less_more: expression < expression
+    #                           expression > expression
+    #                           expression
+    def z_expression_less_more(self):
+
+        # expression_cmp_less_more
         node = self.z_expression()
 
-        # id = ...
-        if node is not None and node.get_name() is LibParse.VARIABLE and self.get_token_type() is LibState.STATE_EQUAL:
-            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
+        # [expression] < [expression]
+        if self.get_token_type() is LibState.STATE_CMP_LESS:
+            node = Node(LibParse.LESS, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
+
+        # [expression] > [expression]
+        elif self.get_token_type() is LibState.STATE_CMP_MORE:
+            node = Node(LibParse.MORE, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
 
         return node
 
@@ -249,7 +266,7 @@ class Parser:
 
         # id
         if self.get_token_type() is LibState.STATE_IDENTITY:
-            node = Node(LibParse.VARIABLE, self.get_token_current())
+            node = Node(LibParse.VAR_VAR, self.get_token_current())
             self.get_token_next()
             return node
 
@@ -276,7 +293,7 @@ class Parser:
                 self.error('Empty (...) state')
 
             # inner expression
-            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression())
+            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression_less_more())
 
             # check )
             if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:

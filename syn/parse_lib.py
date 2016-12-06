@@ -23,14 +23,10 @@ class LibParse:
     MORE = 'MORE >'
 
     # Types
-    # Common for all variables
-    VARIABLE = 'VARIABLE'
+    # Declaration
+    VAR_DECLARATION = 'VAR_DECLARATION'
 
-    # Declaration types
-    VAR_INT = 'VAR_INT'
-    VAR_BOOL = 'VAR_BOOL'
-
-    # Values
+    VAR_VAR = 'VAR_LINK'
     VAL_NUMBER = 'VAL_NUMBER'
     VAL_BOOL = 'VAL_BOOL'
 

@@ -7,6 +7,9 @@ class LibState:
     CHAR_MINUS = '-'
     CHAR_PLUS = '+'
     CHAR_MUL = '*'
+    CHAR_LESS = '<'
+    CHAR_MORE = '>'
+    CHAR_SHARP = '#'
     CHAR_CARET = '\r'
     CHAR_NEW_LINE = '\n'
 
@@ -22,6 +25,7 @@ class LibState:
     STATE_ERROR = '[ERROR]'
     STATE_END = '[END]'
     STATE_EOF = '[EOF]'
+    STATES_WRONG_END = []
 
     # braces
     STATE_BRACE_FIG_OPEN = 'Brace: `{` (fig open)'
@@ -38,6 +42,11 @@ class LibState:
     STATE_MUL = 'Single: `*`'
     STATE_SLASH = 'Single: `/`'
 
+    # logic
+    STATE_CMP_LESS = 'Single: `<`'
+    STATE_CMP_MORE = 'Single: `>`'
+    STATE_CMP_EQUAL = 'Twice: `==`'
+
     STATE_EQUAL = 'Single: `=`'
 
     # numbers
@@ -46,20 +55,21 @@ class LibState:
     # vars
     STATE_IDENTITY = 'Identity'
 
-    # i - if - int
+    # v - va - var
+    STATE_V = STATE_IDENTITY
+    STATE_VA = STATE_IDENTITY
+    STATE_VAR = 'VAR'
+
+    # i - if
     STATE_I = STATE_IDENTITY
     STATE_IN = STATE_IDENTITY
     STATE_IF = 'IF'
-    STATE_INT = 'INT'
 
     # other
     STATE_SPACE = 'Single: ` `'
     STATE_NEW_LINE = 'Single: `\\n`'
     STATE_CARET = 'Single: `\\r`'
-    STATE_COMMENT = '[Comment]'
-
-    #
-    STATES_WRONG_END = []
+    STATE_COMMENT = 'Comment'
 
     # --- types ---
     TYPE_OK = 'OK'

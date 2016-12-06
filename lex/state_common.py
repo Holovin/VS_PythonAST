@@ -29,9 +29,13 @@ class StateStart(StateAbstract):
         if re.search('\d', char):
             return StateInteger()
 
-        # i: [identity] or IF or INT
+        # i: [identity] or IF
         if char == 'i':
             return StateLetterI()
+
+        # v: VAR
+        if char == 'v':
+            return StateLetterV()
 
         # [identity]
         if re.search('[a-z]', char):
@@ -68,6 +72,14 @@ class StateStart(StateAbstract):
         # *
         if char == LibState.CHAR_MUL:
             return StateMul()
+
+        # <
+        if char == LibState.CHAR_LESS:
+            return StateLess()
+
+        # >
+        if char == LibState.CHAR_MORE:
+            return StateMore()
 
         # (
         if char == LibState.CHAR_BRACE_CIRCLE_OPEN:
@@ -263,24 +275,58 @@ class StateSpace(StateAbstract):
 
 
 ########################################################################################################################
+# Logical
+# Less: <
+class StateLess(StateAbstract):
+    def get_next_state(self, char):
+        # if char == LibState.CHAR_EQUAL:
+        #     return StateCmpEqual()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_LESS
+
+
+# More: >
+class StateMore(StateAbstract):
+    def get_next_state(self, char):
+        # if char == LibState.CHAR_EQUAL:
+        #     return StateCmpEqual()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_MORE
+
+
 # Single: =
 class StateEqual(StateAbstract):
     def get_next_state(self, char):
+        if char == LibState.CHAR_EQUAL:
+            return StateCmpEqual()
+
         return StateEnd()
 
     def get_str_name(self):
         return LibState.STATE_EQUAL
 
 
+# Twice: ==
+class StateCmpEqual(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_EQUAL
+
+
 ########################################################################################################################
-# IF and INT statements
+# IF statement
 class StateLetterI(StateAbstract):
     def get_next_state(self, char):
         if char == 'f':
             return StateIf()
-
-        if char == 'n':
-            return StateIn()
 
         return end_keyword_or_id_check(char)
 
@@ -297,24 +343,37 @@ class StateIf(StateAbstract):
         return LibState.STATE_IF
 
 
-# INT
-class StateIn(StateAbstract):
+########################################################################################################################
+# VAR
+class StateLetterV(StateAbstract):
     def get_next_state(self, char):
-        if char == 't':
-            return StateInt()
+        if char == 'a':
+            return StateVa()
 
         return end_keyword_or_id_check(char)
 
     def get_str_name(self):
-        return LibState.STATE_IN
+        return LibState.STATE_V
 
 
-class StateInt(StateAbstract):
+class StateVa(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'r':
+            return StateVar()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_VA
+
+
+class StateVar(StateAbstract):
     def get_next_state(self, char):
         return end_keyword_or_id_check(char)
 
     def get_str_name(self):
-        return LibState.STATE_INT
+        return LibState.STATE_VAR
+
 
 ########################################################################################################################
 # Identity
