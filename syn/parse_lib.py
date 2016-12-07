@@ -10,6 +10,7 @@ class LibParse:
     COMPOUND_ST = 'COMPOUND_ST'
     LIST = 'LIST'
     IF = 'IF'
+    WHILE = 'WHILE'
 
     # Operations: math
     ADD = 'ADD'

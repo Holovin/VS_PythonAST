@@ -91,6 +91,13 @@ class LibState:
     STATE_FALS = STATE_IDENTITY
     STATE_FALSE = 'Bool: false'
 
+    # w - wh - whi - whil - while
+    STATE_W = STATE_IDENTITY
+    STATE_WH = STATE_IDENTITY
+    STATE_WHI = STATE_IDENTITY
+    STATE_WHIL = STATE_IDENTITY
+    STATE_WHILE = 'WHILE'
+
     # i - if
     STATE_I = STATE_IDENTITY
     STATE_IN = STATE_IDENTITY

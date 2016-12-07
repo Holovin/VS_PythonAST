@@ -18,13 +18,17 @@ class Runner:
         exit()
         return Node(LibParse.NOOP, None)
 
-    def execute(self, node, scope):
+    def get_scope(self):
+        return self.scope
+
+    def execute(self, node, scope, from_loop=False):
         current_scope = scope
 
         # check if has result > go deeper
-        if node.result is None:
+        if node.result is None or from_loop:
+
             # create new scope
-            if node.get_name() is LibParse.COMPOUND_ST:
+            if node.get_name() is LibParse.COMPOUND_ST and not from_loop:
                 current_scope = Scope(scope)
                 scope.add_child(current_scope)
 
@@ -53,11 +57,11 @@ class Runner:
             # [EXECUTE NODES]
             # try run 1st operator
             if node.op1 is not None:
-                node.op1 = self.execute(node.op1, current_scope)
+                node.op1 = self.execute(node.op1, current_scope, from_loop)
 
             # try run 2nd operator
-            if node.op2 is not None and node.get_name() is not LibParse.IF:
-                node.op2 = self.execute(node.op2, current_scope)
+            if node.op2 is not None and node.get_name() not in [LibParse.IF, LibParse.WHILE]:
+                node.op2 = self.execute(node.op2, current_scope, from_loop)
 
             # IF | if (?) ?
             if node.get_name() is LibParse.IF:
@@ -68,11 +72,48 @@ class Runner:
 
                 # try cast result to BOOL and check result
                 if val_condition.get_value(ExeLib.TYPE_BOOL):
-                    node.op2 = self.execute(node.op2, current_scope)
+                    node.op2 = self.execute(node.op2, current_scope, from_loop)
 
                 # fake execute to check scope declarations
                 else:
-                    self.execute(node.op2, Scope(current_scope, True))
+                    self.execute(node.op2, Scope(current_scope, True), from_loop)
+
+                return node
+
+            # WHILE | while (?) ?
+            if node.get_name() is LibParse.WHILE:
+                val_condition, err = self._var_unpack(current_scope, node.op1, LibParse.WHILE)
+
+                if err is not None:
+                    return err
+
+                # try cast result to BOOL and check result
+                if val_condition.get_value(ExeLib.TYPE_BOOL):
+                    # while body 1st run
+                    node.op2 = self.execute(node.op2, current_scope, from_loop)
+
+                    # check (?)
+                    node.op1 = self.execute(node.op1, current_scope, from_loop)
+                    val_condition, err = self._var_unpack(current_scope, node.op1, LibParse.WHILE)
+
+                    if err is not None:
+                        return err
+
+                    # loop-in
+                    while val_condition.get_value(ExeLib.TYPE_BOOL):
+                        # while body 2nd + N run
+                        node.op2 = self.execute(node.op2, current_scope, True)
+
+                        # check (?)
+                        node.op1 = self.execute(node.op1, current_scope, True)
+                        val_condition, err = self._var_unpack(current_scope, node.op1, LibParse.WHILE)
+
+                        if err is not None:
+                            return err
+
+                # fake execute to check scope declarations
+                else:
+                    self.execute(node.op2, Scope(current_scope, True), from_loop)
 
                 return node
 
@@ -333,9 +374,6 @@ class Runner:
 
         # just skip others
         return node
-
-    def get_scope(self):
-        return self.scope
 
     def _var_unpack(self, scope, op_node, op_name):
         # check if var exist in scope

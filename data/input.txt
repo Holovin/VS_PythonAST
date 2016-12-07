@@ -1,12 +1,7 @@
 {
-    var a1;
-    a1 = true;
+    var z;
 
-    var a2;
-    a2 = false;
-
-    if (a1 && !0) {
-        var z;
-        z = true;
+    while (z < 10) {
+        z = z + 3;
     }
 }

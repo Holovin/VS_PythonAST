@@ -57,6 +57,7 @@ class Parser:
     # statement: compound-st (check {)
     #            expression-st (all others!)
     #            selection-st (check IF)
+    #            while-st (while)
     def z_statement(self):
 
         # compound-st
@@ -66,6 +67,10 @@ class Parser:
         # selection-st
         elif self.get_token_type() is LibState.STATE_IF:
             node = self.z_selection_st()
+
+        # while-st
+        elif self.get_token_type() is LibState.STATE_WHILE:
+            node = self.z_while_st()
 
         else:
             # expression-st
@@ -158,13 +163,27 @@ class Parser:
         # if
         if_st = self.get_token_current_and_skip()
 
-        # (expression_less_more)
+        # (z_expression_or)
         expression = self.y_brace_handler()
 
         # statement
         statement = self.z_statement()
 
         return Node(LibParse.IF, if_st, op1=expression, op2=statement)
+
+    # while-st: while (expression_less_more) statement
+    def z_while_st(self):
+
+        # while
+        while_st = self.get_token_current_and_skip()
+
+        # (z_expression_or)
+        expression = self.y_brace_handler()
+
+        # statement
+        statement = self.z_statement()
+
+        return Node(LibParse.WHILE, while_st, op1=expression, op2=statement)
 
     # expression-st: expression_set [opt];
     def z_expression_st(self):

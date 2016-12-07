@@ -45,6 +45,10 @@ class StateStart(StateAbstract):
         if char == 't':
             return StateLetterT()
 
+        # w: WHILE
+        if char == 'w':
+            return StateLetterW()
+
         # [identity]
         if re.search('[a-z]', char):
             return StateIdentityInput()
@@ -599,3 +603,57 @@ class StateFalse(StateAbstract):
 
     def get_str_name(self):
         return LibState.STATE_FALSE
+
+
+########################################################################################################################
+# WHILE
+class StateLetterW(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'h':
+            return StateWh()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_W
+
+
+class StateWh(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'i':
+            return StateWhi()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_WH
+
+
+class StateWhi(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'l':
+            return StateWhil()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_WHI
+
+
+class StateWhil(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'e':
+            return StateWhile()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_WHIL
+
+
+class StateWhile(StateAbstract):
+    def get_next_state(self, char):
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_WHILE
