@@ -1,8 +1,10 @@
 {
     var a;
 
-    if (9) {
-        a = 2;
-    }
+    #a = false;
+    a = true;
 
+    if (a) {
+        a = 1;
+    }
 }

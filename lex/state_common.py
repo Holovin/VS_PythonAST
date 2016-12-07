@@ -37,6 +37,14 @@ class StateStart(StateAbstract):
         if char == 'v':
             return StateLetterV()
 
+        # f: FALSE
+        if char == 'f':
+            return StateLetterF()
+
+        # t: TRUE
+        if char == 't':
+            return StateLetterT()
+
         # [identity]
         if re.search('[a-z]', char):
             return StateIdentityInput()
@@ -403,3 +411,98 @@ class StateInteger(StateAbstract):
 
     def get_str_name(self):
         return LibState.STATE_NUMBER
+
+
+# Bool: true
+class StateLetterT(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'r':
+            return StateTr()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_T
+
+
+class StateTr(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'u':
+            return StateTru()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_TR
+
+
+class StateTru(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'e':
+            return StateTrue()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_TRU
+
+
+class StateTrue(StateAbstract):
+    def get_next_state(self, char):
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_TRUE
+
+
+# Bool: false
+class StateLetterF(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'a':
+            return StateFa()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_F
+
+
+class StateFa(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'l':
+            return StateFal()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_FA
+
+
+class StateFal(StateAbstract):
+    def get_next_state(self, char):
+        if char == 's':
+            return StateFals()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_FAL
+
+
+class StateFals(StateAbstract):
+    def get_next_state(self, char):
+        if char == 'e':
+            return StateFalse()
+
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_FALS
+
+
+class StateFalse(StateAbstract):
+    def get_next_state(self, char):
+        return end_keyword_or_id_check(char)
+
+    def get_str_name(self):
+        return LibState.STATE_FALSE

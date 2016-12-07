@@ -194,7 +194,7 @@ class Parser:
         node = self.z_expression_less_more()
 
         # [result == id] = ...
-        if node is not None and node.get_name() is LibParse.VAR_VAR and self.get_token_type() is LibState.STATE_EQUAL:
+        if node is not None and node.get_name() is LibParse.VAR_LINK and self.get_token_type() is LibState.STATE_EQUAL:
             node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_less_more())
 
         return node
@@ -266,13 +266,19 @@ class Parser:
 
         # id
         if self.get_token_type() is LibState.STATE_IDENTITY:
-            node = Node(LibParse.VAR_VAR, self.get_token_current())
+            node = Node(LibParse.VAR_LINK, self.get_token_current())
             self.get_token_next()
             return node
 
         # numbers
         elif self.get_token_type() is LibState.STATE_NUMBER:
             node = Node(LibParse.VAL_NUMBER, self.get_token_current())
+            self.get_token_next()
+            return node
+
+        # bool
+        elif self.get_token_type() in [LibState.STATE_FALSE, LibState.STATE_TRUE]:
+            node = Node(LibParse.VAL_BOOL, self.get_token_current())
             self.get_token_next()
             return node
 

@@ -3,6 +3,7 @@ import logging
 from exe.data_store import DataStore
 from exe.exe_lib import ExeLib
 from exe.scope import Scope
+from lex.state_lib import LibState
 from syn.node import Node
 from syn.parse_lib import LibParse
 
@@ -33,9 +34,14 @@ class Runner:
                 node.result = DataStore(ExeLib.TYPE_NUMBER, int(node.get_value()))
                 return node
 
+            # boolean
+            if node.get_name() is ExeLib.TYPE_BOOL:
+                node.result = DataStore(ExeLib.TYPE_BOOL, False if node.get_value() == LibState.WORD_FALSE else True)
+                return node
+
             # variable
-            if node.get_name() is ExeLib.TYPE_VARIABLE:
-                node.result = DataStore(ExeLib.TYPE_VARIABLE, node.get_value())
+            if node.get_name() is ExeLib.TYPE_VAR_LINK:
+                node.result = DataStore(ExeLib.TYPE_VAR_LINK, node.get_value())
                 return node
 
             # var declaration
@@ -80,7 +86,7 @@ class Runner:
             # SET | VAR = ?
             if node.get_name() is LibParse.SET:
                 # check op1 for var name
-                if node.op1.get_name() is not LibParse.VAR_VAR:
+                if node.op1.get_name() is not LibParse.VAR_LINK:
                     return self.error(node, 'Incorrect SET statement (need variable name, but take %s)' % node.op1.get_name())
 
                 # check if var exist in scope
@@ -88,19 +94,19 @@ class Runner:
                     return self.error(node, 'Incorrect SET statement (variable [ %s ] is not exist)' % node.op1.get_result())
 
                 # try get op2 value from scope
-                if node.op2.get_name() is LibParse.VAR_VAR:
+                if node.op2.get_name() is LibParse.VAR_LINK:
                     value = current_scope.get_value(node.op2.get_result().value)
 
                 # try get op2 value and check type from result
-                elif type(node.op2.get_result()) is DataStore and node.op2.get_result().get_type() is ExeLib.TYPE_NUMBER:
+                elif type(node.op2.get_result()) is DataStore and node.op2.get_result().get_type() is not ExeLib.TYPE_UNSET:
                     value = node.op2.get_result().value
 
                 else:
+                    logging.fatal(node.op2.get_result())
                     return self.error(node, 'Incorrect SET statement (need ID or VALUE, but take %s)' % node.op2.get_name())
 
-                # TODO: bool support
-                node.result = DataStore(ExeLib.TYPE_NUMBER, value)
-                current_scope.set_value(node.op1.get_result().value, ExeLib.TYPE_NUMBER, value)
+                node.result = DataStore(node.op2.get_result().get_type(), value)
+                current_scope.set_value(node.op1.get_result().value, node.op2.get_result().get_type(), value)
 
                 return node
 
@@ -214,7 +220,7 @@ class Runner:
 
     def _var_unpack(self, scope, op_node, op_name):
         # check if var exist in scope
-        if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VARIABLE:
+        if type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is ExeLib.TYPE_VAR_LINK:
             value = scope.get_value(op_node.get_result().value)
 
             if value is None:
@@ -223,7 +229,7 @@ class Runner:
             return value, None
 
         # try get value and check type from result
-        elif type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is not ExeLib.TYPE_VARIABLE:
+        elif type(op_node.get_result()) is DataStore and op_node.get_result().get_type() is not ExeLib.TYPE_VAR_LINK:
             value = op_node.get_result()
             return value, None
 

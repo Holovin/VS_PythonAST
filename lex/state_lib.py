@@ -49,8 +49,9 @@ class LibState:
 
     STATE_EQUAL = 'Single: `=`'
 
-    # numbers
+    # value
     STATE_NUMBER = 'Integer: value'
+    STATE_BOOL = 'Bool: value'
 
     # vars
     STATE_IDENTITY = 'Identity'
@@ -59,6 +60,20 @@ class LibState:
     STATE_V = STATE_IDENTITY
     STATE_VA = STATE_IDENTITY
     STATE_VAR = 'VAR'
+
+    # true
+    STATE_T = STATE_IDENTITY
+    STATE_TR = STATE_IDENTITY
+    STATE_TRU = STATE_IDENTITY
+    STATE_TRUE = 'Bool: true'
+
+    # false
+    WORD_FALSE = 'false'
+    STATE_F = STATE_IDENTITY
+    STATE_FA = STATE_IDENTITY
+    STATE_FAL = STATE_IDENTITY
+    STATE_FALS = STATE_IDENTITY
+    STATE_FALSE = 'Bool: false'
 
     # i - if
     STATE_I = STATE_IDENTITY

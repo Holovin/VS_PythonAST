@@ -2,7 +2,7 @@ from syn.parse_lib import LibParse
 
 
 class ExeLib:
-    TYPE_VARIABLE = LibParse.VAR_VAR
+    TYPE_VAR_LINK = LibParse.VAR_LINK
     TYPE_UNSET = 'UNSET'
 
     TYPE_NUMBER = LibParse.VAL_NUMBER

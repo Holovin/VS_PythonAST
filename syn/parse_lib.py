@@ -26,7 +26,7 @@ class LibParse:
     # Declaration
     VAR_DECLARATION = 'VAR_DECLARATION'
 
-    VAR_VAR = 'VAR_LINK'
+    VAR_LINK = 'VAR_LINK'
     VAL_NUMBER = 'VAL_NUMBER'
     VAL_BOOL = 'VAL_BOOL'
 
