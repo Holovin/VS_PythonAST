@@ -186,16 +186,33 @@ class Parser:
 
         return node
 
-    # expression_set: id = expression_cmp_less_more
-    #                 expression_cmp_less_more
+    # expression_set: id = expression_equal
+    #                 expression_equal
     def z_expression_set(self):
+
+        # expression_equal
+        node = self.z_expression_equal()
+
+        # [result == id] = ...
+        if node is not None and node.get_name() is LibParse.VAR_LINK and self.get_token_type() is LibState.STATE_SET:
+            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_equal())
+
+        return node
+
+    # expression_equal: expression_cmp_less_more != expression_cmp_less_more
+    #                   expression_cmp_less_more == expression_cmp_less_more
+    def z_expression_equal(self):
 
         # expression_cmp_less_more
         node = self.z_expression_less_more()
 
-        # [result == id] = ...
-        if node is not None and node.get_name() is LibParse.VAR_LINK and self.get_token_type() is LibState.STATE_EQUAL:
-            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_less_more())
+        # [expression_cmp_less_more] == [expression_cmp_less_more]
+        if self.get_token_type() is LibState.STATE_CMP_EQUAL:
+            node = Node(LibParse.EQUAL, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_less_more())
+
+        # [expression_cmp_less_more] != [expression_cmp_less_more]
+        elif self.get_token_type() is LibState.STATE_CMP_NEQUAL:
+            node = Node(LibParse.NEQUAL, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_less_more())
 
         return node
 
@@ -299,7 +316,7 @@ class Parser:
                 self.error('Empty (...) state')
 
             # inner expression
-            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression_less_more())
+            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression_equal())
 
             # check )
             if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:

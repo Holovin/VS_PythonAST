@@ -1,10 +1,10 @@
 {
     var a;
-
-    #a = false;
     a = true;
 
-    if (a) {
-        a = 1;
-    }
+    var b;
+    b = false;
+
+    var c;
+    c = a != b;
 }

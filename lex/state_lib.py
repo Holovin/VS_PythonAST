@@ -10,6 +10,7 @@ class LibState:
     CHAR_LESS = '<'
     CHAR_MORE = '>'
     CHAR_SHARP = '#'
+    CHAR_EXCL = '!'
     CHAR_CARET = '\r'
     CHAR_NEW_LINE = '\n'
 
@@ -47,7 +48,10 @@ class LibState:
     STATE_CMP_MORE = 'Single: `>`'
     STATE_CMP_EQUAL = 'Twice: `==`'
 
-    STATE_EQUAL = 'Single: `=`'
+    STATE_CMP_EXCL = 'Single: `!`'
+    STATE_CMP_NEQUAL = 'Twice: `!=`'
+
+    STATE_SET = 'Single: `=`'
 
     # value
     STATE_NUMBER = 'Integer: value'

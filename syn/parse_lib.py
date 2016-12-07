@@ -21,6 +21,8 @@ class LibParse:
     SET = 'SET'
     LESS = 'LESS <'
     MORE = 'MORE >'
+    EQUAL = 'EQUAL =='
+    NEQUAL = '!EQUAL !='
 
     # Types
     # Declaration

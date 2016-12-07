@@ -53,6 +53,10 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_SPACE:
             return StateSpace()
 
+        # !
+        if char == LibState.CHAR_EXCL:
+            return StateExcl()
+
         # [#]
         if char == LibState.CHAR_SHARP:
             return StateSharp()
@@ -317,7 +321,7 @@ class StateEqual(StateAbstract):
         return StateEnd()
 
     def get_str_name(self):
-        return LibState.STATE_EQUAL
+        return LibState.STATE_SET
 
 
 # Twice: ==
@@ -327,6 +331,27 @@ class StateCmpEqual(StateAbstract):
 
     def get_str_name(self):
         return LibState.STATE_CMP_EQUAL
+
+
+# Single: !
+class StateExcl(StateAbstract):
+    def get_next_state(self, char):
+        if char == LibState.CHAR_EQUAL:
+            return StateCmpNEqual()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_EXCL
+
+
+# Twice: !=
+class StateCmpNEqual(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_NEQUAL
 
 
 ########################################################################################################################
