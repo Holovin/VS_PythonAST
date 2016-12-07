@@ -19,6 +19,7 @@ class LibParse:
 
     # Logical
     SET = 'SET'
+    EXCL = '!'
     LESS = 'LESS <'
     LESS_EQUAL = 'LESS_EQ <='
     MORE = 'MORE >'

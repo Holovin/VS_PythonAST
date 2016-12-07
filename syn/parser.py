@@ -270,7 +270,6 @@ class Parser:
         elif self.get_token_type() is LibState.STATE_CMP_MORE_EQUAL:
             node = Node(LibParse.MORE_EQUAL, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
 
-
         return node
 
     # expression: expression + term
@@ -293,23 +292,37 @@ class Parser:
 
         return node
 
-    # term: term * factor
-    #       term / factor
-    #       factor
+    # term: term * factor_excl
+    #       term / factor_excl
+    #       factor_excl
     def z_term(self):
 
         # factor
-        node = self.z_factor()
+        node = self.z_factor_excl()
 
         # chain mode
         while self.get_token_type() in [LibState.STATE_MUL, LibState.STATE_SLASH] and node is not None:
             # term * factor
             if node is not None and self.get_token_type() is LibState.STATE_MUL:
-                node = Node(LibParse.MUL, self.get_token_current_and_skip(), op1=node, op2=self.z_factor())
+                node = Node(LibParse.MUL, self.get_token_current_and_skip(), op1=node, op2=self.z_factor_excl())
 
             # term / factor
             elif node is not None and self.get_token_type() is LibState.STATE_SLASH:
-                node = Node(LibParse.DIV, self.get_token_current_and_skip(), op1=node, op2=self.z_factor())
+                node = Node(LibParse.DIV, self.get_token_current_and_skip(), op1=node, op2=self.z_factor_excl())
+
+        return node
+
+    # factor_excl: !factor
+    #              factor
+    def z_factor_excl(self):
+
+        # !expression
+        if self.get_token_type() is LibState.STATE_CMP_EXCL:
+            node = Node(LibParse.EXCL, self.get_token_current_and_skip(), op1=self.z_factor())
+
+        # expression
+        else:
+            node = self.z_factor()
 
         return node
 

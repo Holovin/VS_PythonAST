@@ -108,6 +108,16 @@ class Runner:
 
                 return node
 
+            # EXCL
+            if node.get_name() is LibParse.EXCL:
+                # check op1
+                val_op1, err = self._var_unpack(scope, node.op1, LibParse.LESS)
+
+                if err is not None:
+                    return err
+
+                node.result = DataStore(ExeLib.TYPE_BOOL, not val_op1.get_value())
+
             # LESS | ? < ?
             if node.get_name() is LibParse.LESS:
                 # check op1

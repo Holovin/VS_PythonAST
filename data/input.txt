@@ -5,7 +5,7 @@
     var a2;
     a2 = false;
 
-    if (a1 && 1 && 2 && 3 && 0) {
+    if (a1 && !0) {
         var z;
         z = true;
     }
