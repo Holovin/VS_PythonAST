@@ -246,6 +246,8 @@ class Parser:
 
     # expression_cmp_less_more: expression < expression
     #                           expression > expression
+    #                           expression >= expression
+    #                           expression <= expression
     #                           expression
     def z_expression_less_more(self):
 
@@ -256,9 +258,18 @@ class Parser:
         if self.get_token_type() is LibState.STATE_CMP_LESS:
             node = Node(LibParse.LESS, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
 
+        # [expression] <= [expression]
+        elif self.get_token_type() is LibState.STATE_CMP_LESS_EQUAL:
+            node = Node(LibParse.LESS_EQUAL, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
+
         # [expression] > [expression]
         elif self.get_token_type() is LibState.STATE_CMP_MORE:
             node = Node(LibParse.MORE, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
+
+        # [expression] >= [expression]
+        elif self.get_token_type() is LibState.STATE_CMP_MORE_EQUAL:
+            node = Node(LibParse.MORE_EQUAL, self.get_token_current_and_skip(), op1=node, op2=self.z_expression())
+
 
         return node
 

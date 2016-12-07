@@ -125,6 +125,23 @@ class Runner:
                 node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() < val_op2.get_value())
                 return node
 
+            # LESS_EQ | ? <= ?
+            if node.get_name() is LibParse.LESS_EQUAL:
+                # check op1
+                val_op1, err = self._var_unpack(scope, node.op1, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                # check op2
+                val_op2, err = self._var_unpack(scope, node.op2, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() <= val_op2.get_value())
+                return node
+
             # MORE | ? > ?
             if node.get_name() is LibParse.MORE:
                 # check op1
@@ -140,6 +157,23 @@ class Runner:
                     return err
 
                 node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() > val_op2.get_value())
+                return node
+
+            # MORE_EQ | ? >= ?
+            if node.get_name() is LibParse.MORE_EQUAL:
+                # check op1
+                val_op1, err = self._var_unpack(scope, node.op1, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                # check op2
+                val_op2, err = self._var_unpack(scope, node.op2, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() >= val_op2.get_value())
                 return node
 
             # EQ | ? == ?

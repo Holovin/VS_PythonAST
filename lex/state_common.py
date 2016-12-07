@@ -299,8 +299,8 @@ class StateSpace(StateAbstract):
 # Less: <
 class StateLess(StateAbstract):
     def get_next_state(self, char):
-        # if char == LibState.CHAR_EQUAL:
-        #     return StateCmpEqual()
+        if char == LibState.CHAR_EQUAL:
+            return StateLessEqual()
 
         return StateEnd()
 
@@ -308,16 +308,34 @@ class StateLess(StateAbstract):
         return LibState.STATE_CMP_LESS
 
 
+# LessEq: <=
+class StateLessEqual(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_LESS_EQUAL
+
+
 # More: >
 class StateMore(StateAbstract):
     def get_next_state(self, char):
-        # if char == LibState.CHAR_EQUAL:
-        #     return StateCmpEqual()
+        if char == LibState.CHAR_EQUAL:
+            return StateMoreEqual()
 
         return StateEnd()
 
     def get_str_name(self):
         return LibState.STATE_CMP_MORE
+
+
+# More: >=
+class StateMoreEqual(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_MORE_EQUAL
 
 
 # Single: =

@@ -20,16 +20,18 @@ class LibParse:
     # Logical
     SET = 'SET'
     LESS = 'LESS <'
+    LESS_EQUAL = 'LESS_EQ <='
     MORE = 'MORE >'
+    MORE_EQUAL = 'MORE_EQ >='
     EQUAL = 'EQUAL =='
     NEQUAL = '!EQUAL !='
     OR = 'OR ||'
     AND = 'AND &&'
 
-    # Types
     # Declaration
     VAR_DECLARATION = 'VAR_DECLARATION'
 
+    # Types
     VAR_LINK = 'VAR_LINK'
     VAL_NUMBER = 'VAL_NUMBER'
     VAL_BOOL = 'VAL_BOOL'

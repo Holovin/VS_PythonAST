@@ -47,7 +47,11 @@ class LibState:
 
     # logic
     STATE_CMP_LESS = 'Single: `<`'
+    STATE_CMP_LESS_EQUAL = 'Twice: `<=`'
+
     STATE_CMP_MORE = 'Single: `>`'
+    STATE_CMP_MORE_EQUAL = 'Twice: `>=`'
+
     STATE_CMP_EQUAL = 'Twice: `==`'
 
     STATE_CMP_EXCL = 'Single: `!`'
