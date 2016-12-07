@@ -68,7 +68,6 @@ class Runner:
 
                 # try cast result to BOOL and check result
                 if val_condition.get_value(ExeLib.TYPE_BOOL):
-                    logging.fatal(val_condition.get_value(ExeLib.TYPE_BOOL))
                     node.op2 = self.execute(node.op2, current_scope)
 
                 # fake execute to check scope declarations
@@ -102,7 +101,6 @@ class Runner:
                     value = node.op2.get_result().value
 
                 else:
-                    logging.fatal(node.op2.get_result())
                     return self.error(node, 'Incorrect SET statement (need ID or VALUE, but take %s)' % node.op2.get_name())
 
                 node.result = DataStore(node.op2.get_result().get_type(), value)
