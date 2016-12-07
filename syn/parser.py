@@ -191,11 +191,39 @@ class Parser:
     def z_expression_set(self):
 
         # expression_equal
-        node = self.z_expression_equal()
+        node = self.z_expression_or()
 
         # [result == id] = ...
         if node is not None and node.get_name() is LibParse.VAR_LINK and self.get_token_type() is LibState.STATE_SET:
-            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_equal())
+            node = Node(LibParse.SET, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_or())
+
+        return node
+
+    # expression_or: expression_and || expression_and
+    #                expression_and
+    def z_expression_or(self):
+
+        # expression_equal
+        node = self.z_expression_and()
+
+        # expression_and || expression_and
+        while self.get_token_type() is LibState.STATE_CMP_OR and node is not None:
+            if self.get_token_type() is LibState.STATE_CMP_OR:
+                node = Node(LibParse.OR, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_and())
+
+        return node
+
+    # expression_and: expression_equal && expression_equal
+    #                 expression_equal
+    def z_expression_and(self):
+
+        # expression_equal
+        node = self.z_expression_equal()
+
+        # expression_and && expression_and
+        while self.get_token_type() is LibState.STATE_CMP_AND and node is not None:
+            if self.get_token_type() is LibState.STATE_CMP_AND:
+                node = Node(LibParse.AND, self.get_token_current_and_skip(), op1=node, op2=self.z_expression_equal())
 
         return node
 
@@ -316,7 +344,7 @@ class Parser:
                 self.error('Empty (...) state')
 
             # inner expression
-            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression_equal())
+            node = Node(LibParse.EXPRESSION_INNER, current_token, op1=self.z_expression_or())
 
             # check )
             if self.get_token_type() is not LibState.STATE_BRACE_CIRCLE_CLOSE:

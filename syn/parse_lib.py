@@ -23,6 +23,8 @@ class LibParse:
     MORE = 'MORE >'
     EQUAL = 'EQUAL =='
     NEQUAL = '!EQUAL !='
+    OR = 'OR ||'
+    AND = 'AND &&'
 
     # Types
     # Declaration

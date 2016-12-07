@@ -1,10 +1,12 @@
 {
-    var a;
-    a = true;
+    var a1;
+    a1 = true;
 
-    var b;
-    b = false;
+    var a2;
+    a2 = false;
 
-    var c;
-    c = a != b;
+    if (a1 && 1 && 2 && 3 && 0) {
+        var z;
+        z = true;
+    }
 }

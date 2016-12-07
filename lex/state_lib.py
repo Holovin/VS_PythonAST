@@ -11,6 +11,8 @@ class LibState:
     CHAR_MORE = '>'
     CHAR_SHARP = '#'
     CHAR_EXCL = '!'
+    CHAR_AND = '&'
+    CHAR_OR = '|'
     CHAR_CARET = '\r'
     CHAR_NEW_LINE = '\n'
 
@@ -50,6 +52,12 @@ class LibState:
 
     STATE_CMP_EXCL = 'Single: `!`'
     STATE_CMP_NEQUAL = 'Twice: `!=`'
+
+    STATE_OR = 'Single: `|`'
+    STATE_CMP_OR = 'Twice: `||`'
+
+    STATE_AND = 'Single: `&`'
+    STATE_CMP_AND = 'Twice: `&&`'
 
     STATE_SET = 'Single: `=`'
 

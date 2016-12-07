@@ -61,6 +61,14 @@ class StateStart(StateAbstract):
         if char == LibState.CHAR_SHARP:
             return StateSharp()
 
+        # &
+        if char == LibState.CHAR_AND:
+            return StateAnd()
+
+        # |
+        if char == LibState.CHAR_OR:
+            return StateOr()
+
         # ;
         if char == LibState.CHAR_SEMICOLON:
             return StateSemicolon()
@@ -352,6 +360,48 @@ class StateCmpNEqual(StateAbstract):
 
     def get_str_name(self):
         return LibState.STATE_CMP_NEQUAL
+
+
+# Single: &
+class StateAnd(StateAbstract):
+    def get_next_state(self, char):
+        if char == LibState.CHAR_AND:
+            return StateCmpAnd()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_AND
+
+
+# Twice: &&
+class StateCmpAnd(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_AND
+
+
+# Single: |
+class StateOr(StateAbstract):
+    def get_next_state(self, char):
+        if char == LibState.CHAR_OR:
+            return StateCmpOr()
+
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_OR
+
+
+# Twice: ||
+class StateCmpOr(StateAbstract):
+    def get_next_state(self, char):
+        return StateEnd()
+
+    def get_str_name(self):
+        return LibState.STATE_CMP_OR
 
 
 ########################################################################################################################

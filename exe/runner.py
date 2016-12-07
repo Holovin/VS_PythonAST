@@ -176,6 +176,40 @@ class Runner:
                 node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() != val_op2.get_value())
                 return node
 
+            # AND | ? && ?
+            if node.get_name() is LibParse.AND:
+                # check op1
+                val_op1, err = self._var_unpack(scope, node.op1, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                # check op2
+                val_op2, err = self._var_unpack(scope, node.op2, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() and val_op2.get_value())
+                return node
+
+            # OR | ? || ?
+            if node.get_name() is LibParse.OR:
+                # check op1
+                val_op1, err = self._var_unpack(scope, node.op1, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                # check op2
+                val_op2, err = self._var_unpack(scope, node.op2, LibParse.MORE)
+
+                if err is not None:
+                    return err
+
+                node.result = DataStore(ExeLib.TYPE_BOOL, val_op1.get_value() or val_op2.get_value())
+                return node
+
             # ADD | ? + ?
             if node.get_name() is LibParse.ADD:
                 # check op1
