@@ -157,7 +157,7 @@ class Parser:
 
         return node
 
-    # selection-st: if (expression_less_more) statement
+    # selection-st: if (expression_or) statement
     def z_selection_st(self):
 
         # if
@@ -171,7 +171,7 @@ class Parser:
 
         return Node(LibParse.IF, if_st, op1=expression, op2=statement)
 
-    # while-st: while (expression_less_more) statement
+    # while-st: while (expression_or) statement
     def z_while_st(self):
 
         # while
@@ -205,8 +205,8 @@ class Parser:
 
         return node
 
-    # expression_set: id = expression_equal
-    #                 expression_equal
+    # expression_set: id = expression_or
+    #                 expression_or
     def z_expression_set(self):
 
         # expression_equal
@@ -248,6 +248,7 @@ class Parser:
 
     # expression_equal: expression_cmp_less_more != expression_cmp_less_more
     #                   expression_cmp_less_more == expression_cmp_less_more
+    #                   expression_cmp_less_more
     def z_expression_equal(self):
 
         # expression_cmp_less_more
