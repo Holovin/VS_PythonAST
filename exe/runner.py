@@ -60,10 +60,12 @@ class Runner:
                 if err is not None:
                     return err
 
-                # check if condition is True
-                if val_condition.get_type() is ExeLib.TYPE_BOOL and val_condition.get_value(ExeLib.TYPE_BOOL) is True:
+                # try cast result to BOOL and check result
+                if val_condition.get_value(ExeLib.TYPE_BOOL):
+                    logging.fatal(val_condition.get_value(ExeLib.TYPE_BOOL))
                     node.op2 = self.execute(node.op2, current_scope)
 
+                # fake execute to check scope declarations
                 else:
                     self.execute(node.op2, Scope(current_scope, True))
 
